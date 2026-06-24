@@ -15,7 +15,6 @@ public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
 
-    // Injecting the clean filter we just rewrote
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
     }
@@ -30,25 +29,25 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF since JWTs are stateless tokens
             .authorizeHttpRequests(auth -> auth
-                // 1. Anyone can browse member directories (Read-only public access)
-                .requestMatchers(HttpMethod.GET, "/api/members").permitAll()
+                // 1. Completely public read-only paths for anyone browsing via JavaScript
+                .requestMatchers(HttpMethod.GET, "/api/members", "/api/events").permitAll()
                 
-                // 2. Open route for new admins to request a profile
-                .requestMatchers("/api/auth/register").permitAll()
-                
-                // 3. Only System Admins can pull pending lists or hit the approve switches
-                .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
-
+                // 2. Open login & registration options
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 
-                // 4. Any modification/upload of data requires a valid ADMIN or SYSTEM_ADMIN role
-                .requestMatchers(HttpMethod.POST, "/api/members/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                // 3. Only System Admins can pull pending lists or hit approval switches
+                .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
+                
+                // 4. Modifying church records, writing announcements, or submitting attendance requires valid admin signatures
+                .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                .requestMatchers("/api/attendance/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
                 
                 // Every other request inside the app requires general authentication
                 .anyRequest().authenticated()
             );
 
-        // Crucial: Intercept all incoming traffic with our JWT guard before Spring's basic login filters run
+        // Intercept all incoming traffic with our JWT guard before Spring's basic login filters run
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
