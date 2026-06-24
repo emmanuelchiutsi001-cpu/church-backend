@@ -10,31 +10,47 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil; // Inject our modern JwtUtil
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    // Step 1: Request an Admin Account (Saves as UNAPPROVED)
     public AppUser registerAdminRequest(String username, String password) {
         Optional<AppUser> existing = userRepository.findByUsername(username);
         if (existing.isPresent()) {
             throw new RuntimeException("Username already taken!");
         }
-        
-        // Hash the password for safety, assign regular admin role, set approved to false
         String hashedPassword = passwordEncoder.encode(password);
         AppUser newAdmin = new AppUser(username, hashedPassword, "ROLE_ADMIN", false);
         return userRepository.save(newAdmin);
     }
 
-    // Step 2: System Admin views who is waiting for approval
+    // New Method: Verify credentials and issue token
+    public String login(String username, String password) {
+        AppUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Invalid username or password!"));
+
+        // 1. Check if the password matches the BCrypt hash
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid username or password!");
+        }
+
+        // 2. Enforcement: Block unapproved admin login attempts
+        if (!user.isApproved()) {
+            throw new RuntimeException("Your account is pending approval from the System Admin.");
+        }
+
+        // 3. Generate and return the secure token embedded with their role
+        return jwtUtil.generateToken(user.getUsername(), user.getRole());
+    }
+
     public List<AppUser> getPendingApprovals() {
         return userRepository.findByApprovedFalse();
     }
 
-    // Step 3: System Admin approves the request
     public AppUser approveAdmin(Long userId) {
         AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found!"));

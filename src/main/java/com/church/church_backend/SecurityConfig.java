@@ -38,6 +38,8 @@ public class SecurityConfig {
                 
                 // 3. Only System Admins can pull pending lists or hit the approve switches
                 .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
+
+                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 
                 // 4. Any modification/upload of data requires a valid ADMIN or SYSTEM_ADMIN role
                 .requestMatchers(HttpMethod.POST, "/api/members/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
