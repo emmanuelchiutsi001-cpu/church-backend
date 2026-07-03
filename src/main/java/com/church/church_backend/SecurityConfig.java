@@ -35,6 +35,9 @@ public class SecurityConfig {
                 // 2. Open login & registration options
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 
+                // 🌟 NEW RULE: Let your ChurchFileController handle the custom Header/Role checking logic!
+                .requestMatchers("/api/files/**").permitAll() 
+                
                 // 3. Only System Admins can pull pending lists or hit approval switches
                 .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
                 
@@ -51,5 +54,5 @@ public class SecurityConfig {
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
+     }
 }
