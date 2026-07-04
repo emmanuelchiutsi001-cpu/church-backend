@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.dto;
 
 public class LoginResponse {
     private String token;

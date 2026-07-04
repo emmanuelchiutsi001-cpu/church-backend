@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.dto;
 
 public class LoginRequest {
     private String username;

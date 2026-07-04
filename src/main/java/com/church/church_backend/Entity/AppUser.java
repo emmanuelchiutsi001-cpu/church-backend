@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

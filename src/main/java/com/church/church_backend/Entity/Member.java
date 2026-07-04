@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.Controllers;
 
 import java.util.List;
 
@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.church.church_backend.Entity.ChurchEvent;
+import com.church.church_backend.Repository.EventRepository;
 
 @RestController
 @RequestMapping("/api/events")

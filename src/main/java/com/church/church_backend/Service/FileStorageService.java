@@ -1,4 +1,4 @@
-package com.church.church_backend;
+package com.church.church_backend.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +12,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.church.church_backend.Entity.ChurchFile;
+import com.church.church_backend.Repository.ChurchFileRepository;
 
 @Service
 public class FileStorageService {
