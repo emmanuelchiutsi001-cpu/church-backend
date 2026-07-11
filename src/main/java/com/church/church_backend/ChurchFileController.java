@@ -1,5 +1,6 @@
 package com.church.church_backend;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -21,25 +22,45 @@ public class ChurchFileController {
 
     private final FileStorageService fileStorageService;
     private final ChurchFileRepository churchFileRepository;
+    private final SubDivisionRepository subDivisionRepository; // 🌟 Injected repository
 
-    // Correctly binds to your original sysadmin password property configuration
     @Value("${app.sysadmin.password:MasterSecret2026!}")
     private String configuredSuperAdminKey;
 
-    public ChurchFileController(FileStorageService fileStorageService, ChurchFileRepository churchFileRepository) {
+    // Updated constructor to handle the new repository injection
+    public ChurchFileController(FileStorageService fileStorageService, 
+                                ChurchFileRepository churchFileRepository,
+                                SubDivisionRepository subDivisionRepository) {
         this.fileStorageService = fileStorageService;
         this.churchFileRepository = churchFileRepository;
+        this.subDivisionRepository = subDivisionRepository;
     }
 
-    // 1. Upload files - Restrained by Role & Categorized
+    // 1. Upload files - Securely bounded by Subdivision ownership
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("category") String category,
-            @RequestHeader("User-Role") String userRole) {
+            @RequestParam("subDivisionId") Long subDivisionId, // 🌟 Accept the subdivision ID
+            @RequestHeader("User-Role") String userRole,
+            Principal principal) { // 🌟 Pulls the verified username out of your JWT token
         
         if (!"Admin".equalsIgnoreCase(userRole) && !"SuperAdmin".equalsIgnoreCase(userRole)) {
             return new ResponseEntity<>("Access Denied: Members cannot upload files.", HttpStatus.FORBIDDEN);
+        }
+
+        // 🌟 CROSS-POST PROTECTION RULE
+        if ("Admin".equalsIgnoreCase(userRole)) {
+            SubDivision subDivision = subDivisionRepository.findById(subDivisionId).orElse(null);
+            if (subDivision == null) {
+                return new ResponseEntity<>("Subdivision not found.", HttpStatus.NOT_FOUND);
+            }
+            
+            String currentUsername = principal.getName();
+            // If the logged-in admin username doesn't match the record owner, instantly reject it!
+            if (!subDivision.getAdmin().getUsername().equals(currentUsername)) {
+                return new ResponseEntity<>("Access Denied: You do not manage this subdivision.", HttpStatus.FORBIDDEN);
+            }
         }
 
         if (file.isEmpty()) {
@@ -60,6 +81,10 @@ public class ChurchFileController {
                     category,
                     java.time.LocalDateTime.now()
             );
+
+            // Note: If you want to associate the ChurchFile to the subdivision long-term in the DB,
+            // make sure to add a @ManyToOne relationship inside ChurchFile.java and call:
+            // churchFile.setSubDivision(subDivision);
 
             ChurchFile savedFile = churchFileRepository.save(churchFile);
             return new ResponseEntity<>(savedFile, HttpStatus.OK);
