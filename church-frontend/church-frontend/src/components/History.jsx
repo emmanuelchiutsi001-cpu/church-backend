@@ -1,70 +1,60 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function History() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef(null);
 
   const historyData = [
     {
-      period: "2010 - 2012",
-      title: "The Foundation Years",
-      description: "Agnes & Alois Youth Guild was established at St. Mary's Cathedral with 50 founding members.",
+      period: "2010",
+      title: "The Foundation",
+      description: "Agnes & Alois Youth Guild was established at St. Mary's Cathedral with 50 founding members, inspired by the patron saints of youth. The founding members came together with a shared vision of creating a vibrant Catholic youth community in Harare.",
       icon: "🌱",
-      color: "#4CAF50"
+      color: "#4CAF50",
+      image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=400&h=300&fit=crop"
     },
     {
-      period: "2013 - 2015",
-      title: "Growth & Service",
-      description: "Launched community outreach programs, youth leadership training, and grew to 12 parishes.",
+      period: "2011 - 2013",
+      title: "Growth & Outreach",
+      description: "Expanded to 5 parishes, launched community outreach programs and youth leadership training initiatives. The guild began making a significant impact in local communities through various charitable activities.",
       icon: "📈",
-      color: "#2196F3"
+      color: "#2196F3",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=400&h=300&fit=crop"
     },
     {
-      period: "2016 - 2018",
+      period: "2014 - 2016",
       title: "Expansion & Impact",
-      description: "Hosted the first annual youth convention with 300+ attendees. Participated in international exchange.",
+      description: "Grew to 8 parishes. Hosted the first annual youth convention with 200+ attendees from across Harare. The convention became a landmark event, bringing together young Catholics from all over the archdiocese.",
       icon: "🌟",
-      color: "#FF9800"
+      color: "#FF9800",
+      image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop"
     },
     {
-      period: "2019 - 2021",
+      period: "2017 - 2019",
+      title: "Strengthening Faith",
+      description: "Introduced mentorship programs, Bible study groups, and participated in international youth exchanges. The guild established partnerships with other youth organizations across Africa.",
+      icon: "📖",
+      color: "#9C27B0",
+      image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop"
+    },
+    {
+      period: "2020 - 2022",
       title: "Resilience & Innovation",
-      description: "Introduced mentorship programs. Adapted to online ministry during the pandemic.",
+      description: "Adapted to online ministry during the pandemic. Launched digital catechesis, virtual fellowship, and online prayer groups. The guild showed remarkable resilience and innovation during challenging times.",
       icon: "💪",
-      color: "#9C27B0"
+      color: "#E91E63",
+      image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=400&h=300&fit=crop"
     },
     {
-      period: "2022 - 2023",
-      title: "Community Impact",
-      description: "Recognized for outstanding community service by the Archdiocese.",
-      icon: "👏",
-      color: "#E91E63"
-    },
-    {
-      period: "2024 - Present",
+      period: "2023 - Present",
       title: "Thriving Community",
-      description: "Over 500 active members across 12+ parishes. Continuing to grow in faith and service.",
+      description: "Over 500 active members across 12+ parishes. Recognized for outstanding service by the Archdiocese of Harare. The guild continues to grow and inspire young Catholics across Zimbabwe.",
       icon: "❤️",
-      color: "#D4AF37"
+      color: "#D4AF37",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=400&h=300&fit=crop"
     }
   ];
-
-  useEffect(() => {
-    if (!isHovered) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => 
-          prevIndex + 3 >= historyData.length ? 0 : prevIndex + 3
-        );
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [isHovered, historyData.length]);
-
-  const visibleCards = historyData.slice(currentIndex, currentIndex + 3);
-  const remaining = 3 - visibleCards.length;
-  const fullDisplay = [...visibleCards, ...historyData.slice(0, remaining)];
-  const totalSlides = Math.ceil(historyData.length / 3);
 
   const stats = [
     { number: "500+", label: "Active Members", icon: "👥" },
@@ -72,6 +62,26 @@ function History() {
     { number: "15", label: "Years of Service", icon: "🎂" },
     { number: "10+", label: "Programs", icon: "📋" }
   ];
+
+  // Handle scroll to highlight active card
+  useEffect(() => {
+    const handleScroll = () => {
+      const cards = document.querySelectorAll('.history-card');
+      const scrollPosition = window.scrollY + 300;
+      
+      cards.forEach((card, index) => {
+        const cardTop = card.offsetTop;
+        const cardBottom = cardTop + card.offsetHeight;
+        
+        if (scrollPosition >= cardTop && scrollPosition <= cardBottom) {
+          setActiveIndex(index);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <motion.section 
@@ -81,6 +91,7 @@ function History() {
       viewport={{ once: true }}
       className="py-5" 
       style={{ background: "linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%)" }}
+      ref={containerRef}
     >
       <div className="container">
         {/* Header */}
@@ -92,18 +103,21 @@ function History() {
           className="text-center mb-4"
         >
           <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-2" style={{
-            fontSize: "0.6rem",
-            letterSpacing: "2px",
+            fontSize: "0.55rem",
+            letterSpacing: "3px",
             border: "1px solid rgba(13,71,161,0.1)"
           }}>
-            OUR HISTORY
+            OUR JOURNEY
           </span>
           <h2 className="fw-bold" style={{
             color: "#0D47A1",
             fontSize: "clamp(1.8rem, 3vw, 2.5rem)"
           }}>
-            Our Journey of <span style={{ color: "#D4AF37" }}>Faith & Service</span>
+            Our Story of <span style={{ color: "#D4AF37" }}>Faith & Service</span>
           </h2>
+          <p className="text-muted" style={{ fontSize: "0.9rem" }}>
+            A legacy of persistence, sacrifice, and growth in the heart of Zimbabwe
+          </p>
           <div className="mx-auto mb-2" style={{ width: "50px", height: "3px", background: "#D4AF37" }} />
         </motion.div>
 
@@ -139,155 +153,131 @@ function History() {
           ))}
         </motion.div>
 
-        {/* Auto-Sliding Cards */}
-        <div 
-          className="position-relative"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <div className="row g-3">
-            {fullDisplay.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="col-md-4"
-              >
-                <motion.div 
-                  className="card border-0 h-100 shadow-sm"
+        {/* Sticky Header + Scrollable Cards */}
+        <div className="row g-4">
+          {/* Sticky Left Column - Timeline */}
+          <div className="col-lg-4">
+            <div 
+              className="position-sticky" 
+              style={{ 
+                top: "100px",
+                zIndex: 10
+              }}
+            >
+              <div className="bg-white rounded-4 shadow-sm p-4">
+                <h5 className="fw-bold text-primary mb-3" style={{ fontSize: "1.1rem" }}>
+                  <span style={{ color: "#D4AF37" }}>⏳</span> Our Timeline
+                </h5>
+                <div className="d-flex flex-column gap-2">
+                  {historyData.map((item, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => {
+                        const card = document.querySelectorAll('.history-card')[index];
+                        if (card) {
+                          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="border-0 rounded-3 text-start px-3 py-2"
+                      style={{
+                        background: activeIndex === index ? "#0D47A1" : "transparent",
+                        color: activeIndex === index ? "#FFFFFF" : "#495057",
+                        transition: "all 0.3s ease",
+                        borderLeft: activeIndex === index ? "3px solid #D4AF37" : "3px solid transparent"
+                      }}
+                    >
+                      <div style={{ 
+                        fontSize: "0.65rem", 
+                        fontWeight: "600",
+                        color: activeIndex === index ? "#D4AF37" : "#6c757d"
+                      }}>
+                        {item.period}
+                      </div>
+                      <div style={{ fontSize: "0.8rem", fontWeight: "500" }}>
+                        {item.title}
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Right Column - Cards */}
+          <div className="col-lg-8">
+            <div className="d-flex flex-column gap-4">
+              {historyData.map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="history-card"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true, margin: "-50px" }}
                   style={{
-                    borderRadius: "12px",
-                    overflow: "hidden"
+                    scrollMarginTop: "100px"
                   }}
-                  whileHover={{ 
-                    y: -8,
-                    boxShadow: "0 12px 40px rgba(13,71,161,0.1)"
-                  }}
-                  transition={{ duration: 0.3 }}
                 >
                   <motion.div 
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    className="card border-0 shadow-sm overflow-hidden"
+                    whileHover={{ 
+                      y: -5,
+                      boxShadow: "0 12px 40px rgba(13,71,161,0.1)"
+                    }}
+                    transition={{ duration: 0.3 }}
                     style={{
-                      height: "3px",
-                      background: item.color,
-                      width: "100%",
-                      transformOrigin: "left"
-                    }} 
-                  />
-                  <div className="card-body p-3">
-                    <div className="d-flex align-items-start gap-2">
-                      <motion.div 
-                        className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
-                        animate={{ rotate: [0, 360] }}
-                        transition={{ duration: 20, repeat: Infinity }}
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          background: `${item.color}15`,
-                          fontSize: "1.2rem"
-                        }}
-                      >
-                        {item.icon}
-                      </motion.div>
-                      <div>
-                        <span className="badge" style={{
-                          background: `${item.color}20`,
-                          color: item.color,
-                          fontSize: "0.5rem",
-                          fontWeight: "600"
-                        }}>
-                          {item.period}
-                        </span>
-                        <h6 className="fw-bold mt-1" style={{
-                          color: "#0D47A1",
-                          fontSize: "0.85rem"
-                        }}>
-                          {item.title}
-                        </h6>
+                      borderRadius: "16px",
+                      borderLeft: `4px solid ${item.color}`
+                    }}
+                  >
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <img 
+                          src={item.image} 
+                          alt={item.title}
+                          className="img-fluid"
+                          style={{
+                            height: "200px",
+                            width: "100%",
+                            objectFit: "cover"
+                          }}
+                        />
+                      </div>
+                      <div className="col-md-8">
+                        <div className="card-body p-3">
+                          <div className="d-flex align-items-center gap-2 mb-2">
+                            <span style={{ fontSize: "1.5rem" }}>{item.icon}</span>
+                            <span className="badge" style={{
+                              background: `${item.color}20`,
+                              color: item.color,
+                              fontSize: "0.55rem",
+                              fontWeight: "600"
+                            }}>
+                              {item.period}
+                            </span>
+                          </div>
+                          <h5 className="fw-bold" style={{ 
+                            color: "#0D47A1",
+                            fontSize: "1rem"
+                          }}>
+                            {item.title}
+                          </h5>
+                          <p className="text-muted mb-0" style={{
+                            fontSize: "0.8rem",
+                            lineHeight: "1.7"
+                          }}>
+                            {item.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-muted mt-2 mb-0" style={{
-                      fontSize: "0.75rem",
-                      lineHeight: "1.6",
-                      marginLeft: "48px"
-                    }}>
-                      {item.description}
-                    </p>
-                  </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
-
-          {/* Navigation Dots */}
-          <div className="d-flex justify-content-center gap-2 mt-3">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => setCurrentIndex(index * 3)}
-                className="border-0 rounded-pill"
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  width: index === Math.floor(currentIndex / 3) ? "20px" : "8px",
-                  height: "6px",
-                  background: index === Math.floor(currentIndex / 3) ? "#0D47A1" : "#d3d3d3",
-                  transition: "all 0.3s ease",
-                  cursor: "pointer"
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Navigation Arrows */}
-          <motion.button
-            onClick={() => {
-              setCurrentIndex((prev) => 
-                prev - 3 < 0 ? historyData.length - 3 : prev - 3
-              );
-            }}
-            className="position-absolute top-50 start-0 translate-middle-y border-0 bg-white shadow-sm rounded-circle"
-            whileHover={{ scale: 1.1, boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}
-            whileTap={{ scale: 0.9 }}
-            style={{
-              width: "30px",
-              height: "30px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              left: "-12px",
-              zIndex: 2,
-              fontSize: "0.8rem"
-            }}
-          >
-            ‹
-          </motion.button>
-
-          <motion.button
-            onClick={() => {
-              setCurrentIndex((prev) => 
-                prev + 3 >= historyData.length ? 0 : prev + 3
-              );
-            }}
-            className="position-absolute top-50 end-0 translate-middle-y border-0 bg-white shadow-sm rounded-circle"
-            whileHover={{ scale: 1.1, boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}
-            whileTap={{ scale: 0.9 }}
-            style={{
-              width: "30px",
-              height: "30px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              right: "-12px",
-              zIndex: 2,
-              fontSize: "0.8rem"
-            }}
-          >
-            ›
-          </motion.button>
         </div>
 
         {/* Values Section */}
@@ -296,13 +286,13 @@ function History() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          className="mt-4 pt-3"
+          className="mt-5 pt-3"
           style={{ borderTop: "1px solid rgba(13,71,161,0.06)" }}
         >
           <div className="row g-2">
             {[
-              { icon: "✝", title: "Faith", desc: "Rooted in Christ" },
-              { icon: "🤝", title: "Service", desc: "Living the Gospel" },
+              { icon: "✝", title: "Faith", desc: "Rooted in Christ and the Church" },
+              { icon: "🤝", title: "Service", desc: "Living the Gospel in action" },
               { icon: "❤️", title: "Unity", desc: "One family in Christ" }
             ].map((item, index) => (
               <motion.div 
@@ -315,11 +305,11 @@ function History() {
                   <motion.span 
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity, delay: index * 0.5 }}
-                    style={{ fontSize: "1.5rem" }}
+                    style={{ fontSize: "1.8rem" }}
                   >
                     {item.icon}
                   </motion.span>
-                  <h6 className="fw-bold mt-1" style={{ color: "#0D47A1", fontSize: "0.8rem" }}>{item.title}</h6>
+                  <h6 className="fw-bold mt-1" style={{ color: "#0D47A1", fontSize: "0.85rem" }}>{item.title}</h6>
                   <p className="text-muted" style={{ fontSize: "0.7rem" }}>{item.desc}</p>
                 </div>
               </motion.div>
@@ -329,5 +319,5 @@ function History() {
       </div>
     </motion.section>
   );
-}
+} 
 export default History;

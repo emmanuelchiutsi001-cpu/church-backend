@@ -6,12 +6,12 @@ function EventsPreview() {
   const [isHovered, setIsHovered] = useState(false);
 
   const events = [
-    { title: "Youth Gathering", date: "Every Friday", desc: "Weekly fellowship and prayer", icon: "🙏" },
-    { title: "Parish Celebration", date: "Monthly", desc: "Community worship and sharing", icon: "⛪" },
-    { title: "Annual Convention", date: "Coming Soon", desc: "Youth conference and retreat", icon: "🌟" },
-    { title: "Bible Study", date: "Every Wednesday", desc: "Deepening our faith through scripture", icon: "📖" },
-    { title: "Youth Choir", date: "Saturdays", desc: "Singing praises to the Lord", icon: "🎵" },
-    { title: "Community Outreach", date: "Monthly", desc: "Serving our community with love", icon: "🤝" }
+    { title: "Youth Gathering", date: "Every Friday", desc: "Weekly fellowship, prayer, and worship", icon: "🙏" },
+    { title: "Parish Celebration", date: "Monthly", desc: "Community worship, sharing, and fellowship", icon: "⛪" },
+    { title: "Annual Convention", date: "Coming Soon", desc: "Youth conference, retreat, and leadership training", icon: "🌟" },
+    { title: "Bible Study", date: "Every Wednesday", desc: "Deepening our faith through scripture and discussion", icon: "📖" },
+    { title: "Youth Choir", date: "Saturdays", desc: "Singing praises to the Lord through music", icon: "🎵" },
+    { title: "Community Outreach", date: "Monthly", desc: "Serving our community with love and compassion", icon: "🤝" }
   ];
 
   useEffect(() => {
@@ -46,7 +46,16 @@ function EventsPreview() {
           viewport={{ once: true }}
           className="text-center mb-3"
         >
-          <h4 className="fw-bold" style={{ color: "#0D47A1", fontSize: "1.3rem" }}>Upcoming Events</h4>
+          <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-2" style={{ 
+            fontSize: "0.5rem", 
+            letterSpacing: "3px",
+            border: "1px solid rgba(13,71,161,0.1)"
+          }}>
+            WHAT'S HAPPENING
+          </span>
+          <h4 className="fw-bold" style={{ color: "#0D47A1", fontSize: "clamp(1.2rem, 2vw, 1.5rem)" }}>
+            Upcoming <span style={{ color: "#D4AF37" }}>Events</span>
+          </h4>
           <div className="mx-auto" style={{ width: "40px", height: "2px", background: "#D4AF37" }} />
           <p className="text-muted" style={{ fontSize: "0.8rem" }}>Join us in our faith-filled activities</p>
         </motion.div>
@@ -82,14 +91,19 @@ function EventsPreview() {
                       {event.icon}
                     </motion.span>
                     <div className="mb-2">
-                      <span className="badge bg-primary bg-opacity-10 text-primary" style={{ fontSize: "0.6rem" }}>
+                      <span className="badge" style={{ 
+                        background: "#D4AF37",
+                        color: "white",
+                        fontSize: "0.55rem",
+                        fontWeight: "600"
+                      }}>
                         {event.date}
                       </span>
                     </div>
                     <h6 className="fw-bold" style={{ color: "#0D47A1", fontSize: "0.85rem" }}>{event.title}</h6>
                     <p className="text-muted mb-2" style={{ fontSize: "0.75rem" }}>{event.desc}</p>
                     <motion.button 
-                      className="btn btn-outline-primary btn-sm rounded-pill px-2" 
+                      className="btn btn-outline-primary btn-sm rounded-pill px-3" 
                       style={{ fontSize: "0.7rem" }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

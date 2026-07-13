@@ -7,8 +7,11 @@ function Footer() {
     { name: "Home", href: "#" },
     { name: "About Us", href: "#" },
     { name: "Parishes", href: "#" },
+    { name: "Leadership", href: "#" },
     { name: "Events", href: "#" },
     { name: "Gallery", href: "#" },
+    { name: "Blog", href: "#" },
+    { name: "Podcast", href: "#" },
     { name: "Contact", href: "#" }
   ];
 
@@ -50,7 +53,7 @@ function Footer() {
                   Agnes & Alois
                 </h5>
                 <span style={{ fontSize: "0.6rem", color: "#D4AF37", letterSpacing: "2px" }}>
-                  YOUTH GUILD
+                  YOUTH GUILD • HARARE
                 </span>
               </div>
             </div>
@@ -60,7 +63,7 @@ function Footer() {
               lineHeight: "1.7",
               maxWidth: "300px"
             }}>
-              United in faith, service, and community. Building tomorrow's church today through youth empowerment and spiritual growth.
+              United in faith, service, and community. Building tomorrow's church today through youth empowerment and spiritual growth in the Archdiocese of Harare.
             </p>
             
             <div className="d-flex gap-2 mt-3">
@@ -161,7 +164,7 @@ function Footer() {
             <div className="d-flex gap-2 mb-2">
               <span style={{ fontSize: "0.8rem", color: "#D4AF37" }}>📍</span>
               <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)" }}>
-                Archdiocese of Harare
+                Archdiocese of Harare, Zimbabwe
               </span>
             </div>
             
@@ -228,7 +231,7 @@ function Footer() {
               fontSize: "0.65rem",
               letterSpacing: "0.5px"
             }}>
-              © {currentYear} Agnes & Alois Youth Guild. All Rights Reserved.
+              © {currentYear} Agnes & Alois Youth Guild • Archdiocese of Harare. All Rights Reserved.
             </p>
             
             <div className="d-flex gap-3">
