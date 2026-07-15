@@ -1,4 +1,4 @@
-import Navbar from "../components/Navbar";
+
 import Hero from "../components/Hero";
 import Welcome from "../components/Welcome";
 import History from "../components/History";
@@ -13,7 +13,7 @@ function Home() {
 
     return (
         <>
-            <Navbar />
+           
 
             <Hero />
 
