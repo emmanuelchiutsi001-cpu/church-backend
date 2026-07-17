@@ -1,14 +1,10 @@
-package com.church.church_backend.Service;
+package com.church.church_backend;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.church.church_backend.JwtUtil;
-import com.church.church_backend.Entity.AppUser;
-import com.church.church_backend.Repository.UserRepository;
 
 @Service
 public class AuthService {

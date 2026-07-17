@@ -1,12 +1,10 @@
-package com.church.church_backend.Repository;
+package com.church.church_backend;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.church.church_backend.Entity.AppUser;
 
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {

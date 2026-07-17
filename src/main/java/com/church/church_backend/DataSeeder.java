@@ -5,9 +5,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.church.church_backend.Entity.AppUser;
-import com.church.church_backend.Repository.UserRepository;
-
 @Component
 public class DataSeeder implements CommandLineRunner {
 

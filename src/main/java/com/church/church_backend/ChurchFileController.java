@@ -1,4 +1,4 @@
-package com.church.church_backend.Controllers;
+package com.church.church_backend;
 
 import java.util.List;
 
@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.church.church_backend.Entity.ChurchFile;
-import com.church.church_backend.Repository.ChurchFileRepository;
-import com.church.church_backend.Service.FileStorageService;
 
 @RestController
 @RequestMapping("/api/files")

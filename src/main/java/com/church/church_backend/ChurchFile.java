@@ -1,4 +1,4 @@
-package com.church.church_backend.Entity;
+package com.church.church_backend;
 
 import java.time.LocalDateTime;
 

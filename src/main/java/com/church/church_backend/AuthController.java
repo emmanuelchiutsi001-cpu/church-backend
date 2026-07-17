@@ -1,4 +1,4 @@
-package com.church.church_backend.Controllers;
+package com.church.church_backend;
 
 import java.util.List;
 
@@ -11,11 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.church.church_backend.Entity.AppUser;
-import com.church.church_backend.Service.AuthService;
-import com.church.church_backend.dto.LoginRequest;
-import com.church.church_backend.dto.LoginResponse;
 
 @RestController
 @RequestMapping("/api/auth")
