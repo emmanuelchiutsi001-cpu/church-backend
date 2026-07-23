@@ -113,16 +113,17 @@ function NavigationBar() {
     }
   ];
 
-  const navItems = [
-    { name: "Home", href: "/" },
-    { name: "About Us", href: "/about" },
-    { name: "Leadership", href: "/leadership" },
-    { name: "Events", href: "/events" },
-    { name: "Gallery", href: "/gallery" },
-    { name: "Blog", href: "/blog" },
-    { name: "Podcast", href: "/podcast" },
-    { name: "Contact", href: "/contact" }
-  ];
+ const navItems = [
+  { name: "Home", href: "/" },
+  { name: "About the Archdiocese", href: "/about" },
+  { name: "Leadership", href: "/leadership" },
+  { name: "Deaneries", href: "/deaneries" },
+  { name: "Ministries", href: "/ministries" },
+  { name: "News", href: "/news" },
+  { name: "Events", href: "/events" },
+  { name: "Gallery", href: "/gallery" },
+  { name: "Contact", href: "/contact" }
+];
 
   return (
     <Navbar expand="lg" className="bg-white shadow-sm py-2 sticky-top">
@@ -136,14 +137,25 @@ function NavigationBar() {
             className="me-2" 
             alt="Agnes & Alois Youth Guild Logo" 
           />
-          <div>
-            <span className="fw-bold text-primary d-block" style={{ fontSize: "0.9rem", lineHeight: "1.2" }}>
-              Agnes & Alois
-            </span>
-            <span style={{ fontSize: "0.6rem", color: "#D4AF37", letterSpacing: "2px" }}>
-              YOUTH GUILD • HARARE
-            </span>
-          </div>
+         <div>
+  <span
+    className="fw-bold text-primary d-block"
+    style={{ fontSize: "0.92rem", lineHeight: "1.2" }}
+  >
+    Archdiocese of Harare
+  </span>
+
+  <span
+    style={{
+      fontSize: "0.62rem",
+      color: "#D4AF37",
+      letterSpacing: "1.5px",
+      textTransform: "uppercase"
+    }}
+  >
+    Roman Catholic Church
+  </span>
+</div>
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="navbar-nav" />

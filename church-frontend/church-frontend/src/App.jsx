@@ -4,6 +4,18 @@ import NavigationBar from "./components/Navbar";
 import Home from "./pages/Home";
 import ParishDetails from "./pages/ParishDetails";
 
+// Public Pages - Adjust path based on your actual folder structure
+import AboutUs from "./components/homepages/AboutUs";
+import Leadership from "./components/homepages/Leadership";
+import Deaneries from "./components/homepages/Deaneries";
+import Ministries from "./components/homepages/Ministries";
+import News from "./components/homepages/News";
+import Gallery from "./components/homepages/Gallery";
+import Contact from "./components/homepages/Contact";
+import Events from "./components/homepages/Events";
+import Podcast from "./components/homepages/Podcast";
+import JoinUs from "./components/homepages/JoinUs";
+
 import ProtectedRoute from "./admin/auth/ProtectedRoute";
 
 // Authentication
@@ -17,9 +29,9 @@ import AdminDashboard from "./admin/AdminDashboard";
 // Admin Pages
 import Profile from "./admin/pages/Profile";
 import ParishProfile from "./admin/pages/ParishProfile";
-import Events from "./admin/pages/Events";
+import AdminEvents from "./admin/pages/Events";
 import Announcements from "./admin/pages/Announcements";
-import Gallery from "./admin/pages/Gallery";
+import AdminGallery from "./admin/pages/Gallery";
 import Podcasts from "./admin/pages/Podcasts";
 import Executive from "./admin/pages/Executive";
 import Documents from "./admin/pages/Documents";
@@ -36,6 +48,106 @@ function App() {
           <>
             <NavigationBar />
             <Home />
+          </>
+        }
+      />
+
+      <Route
+        path="/about"
+        element={
+          <>
+            <NavigationBar />
+            <AboutUs />
+          </>
+        }
+      />
+
+      <Route
+        path="/leadership"
+        element={
+          <>
+            <NavigationBar />
+            <Leadership />
+          </>
+        }
+      />
+
+      <Route
+        path="/deaneries"
+        element={
+          <>
+            <NavigationBar />
+            <Deaneries />
+          </>
+        }
+      />
+
+      <Route
+        path="/ministries"
+        element={
+          <>
+            <NavigationBar />
+            <Ministries />
+          </>
+        }
+      />
+
+      <Route
+        path="/news"
+        element={
+          <>
+            <NavigationBar />
+            <News />
+          </>
+        }
+      />
+
+      <Route
+        path="/events"
+        element={
+          <>
+            <NavigationBar />
+            <Events />
+          </>
+        }
+      />
+
+      <Route
+        path="/gallery"
+        element={
+          <>
+            <NavigationBar />
+            <Gallery />
+          </>
+        }
+      />
+
+      <Route
+        path="/contact"
+        element={
+          <>
+            <NavigationBar />
+            <Contact />
+          </>
+        }
+      />
+
+      <Route
+        path="/podcast"
+        element={
+          <>
+            <NavigationBar />
+            <Podcast />
+          </>
+        }
+      />
+
+      <Route
+        path="/join"
+        element={
+          <>
+            <NavigationBar />
+            <JoinUs />
           </>
         }
       />
@@ -89,7 +201,7 @@ function App() {
         path="/admin/events"
         element={
           <ProtectedRoute>
-            <Events />
+            <AdminEvents />
           </ProtectedRoute>
         }
       />
@@ -107,7 +219,7 @@ function App() {
         path="/admin/gallery"
         element={
           <ProtectedRoute>
-            <Gallery />
+            <AdminGallery />
           </ProtectedRoute>
         }
       />
