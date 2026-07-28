@@ -1,102 +1,18 @@
-2026-07-17T12:31:32.909+08:00  INFO 7172 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 7172 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T12:31:32.924+08:00  INFO 7172 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T12:31:34.504+08:00  INFO 7172 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T12:31:34.625+08:00  WARN 7172 --- [church-backend] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'userRepository' defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot register bean definition [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] for bean 'userRepository' since there is already [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] bound.
-2026-07-17T12:31:34.662+08:00  INFO 7172 --- [church-backend] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-07-17T12:31:34.702+08:00 ERROR 7172 --- [church-backend] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-The bean 'userRepository', defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration, could not be registered. A bean with that name has already been defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration and overriding is disabled.
-
-Action:
-
-Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
-
-2026-07-17T12:32:04.207+08:00  INFO 11296 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 11296 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T12:32:04.213+08:00  INFO 11296 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T12:32:05.275+08:00  INFO 11296 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T12:32:05.379+08:00  WARN 11296 --- [church-backend] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'userRepository' defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot register bean definition [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] for bean 'userRepository' since there is already [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] bound.
-2026-07-17T12:32:05.391+08:00  INFO 11296 --- [church-backend] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-07-17T12:32:05.443+08:00 ERROR 11296 --- [church-backend] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-The bean 'userRepository', defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration, could not be registered. A bean with that name has already been defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration and overriding is disabled.
-
-Action:
-
-Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
-
-2026-07-17T15:14:17.190+08:00  INFO 22700 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 22700 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T15:14:17.198+08:00  INFO 22700 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T15:14:19.227+08:00  INFO 22700 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T15:14:19.382+08:00  WARN 22700 --- [church-backend] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'userRepository' defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot register bean definition [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] for bean 'userRepository' since there is already [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] bound.
-2026-07-17T15:14:19.405+08:00  INFO 22700 --- [church-backend] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-07-17T15:14:19.482+08:00 ERROR 22700 --- [church-backend] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-The bean 'userRepository', defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration, could not be registered. A bean with that name has already been defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration and overriding is disabled.
-
-Action:
-
-Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
-
-2026-07-17T15:27:32.687+08:00  INFO 23748 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 23748 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T15:27:32.695+08:00  INFO 23748 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T15:27:34.430+08:00  INFO 23748 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T15:27:34.587+08:00  WARN 23748 --- [church-backend] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'userRepository' defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot register bean definition [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] for bean 'userRepository' since there is already [Root bean: class=org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=null; factoryMethodName=null; initMethodNames=null; destroyMethodNames=null; defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration] bound.
-2026-07-17T15:27:34.620+08:00  INFO 23748 --- [church-backend] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2026-07-17T15:27:34.700+08:00 ERROR 23748 --- [church-backend] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-The bean 'userRepository', defined in com.church.church_backend.Repository.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration, could not be registered. A bean with that name has already been defined in com.church.church_backend.UserRepository defined in @EnableJpaRepositories declared on DataJpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration and overriding is disabled.
-
-Action:
-
-Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
-
-2026-07-17T15:34:16.463+08:00  INFO 23864 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 23864 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T15:34:16.469+08:00  INFO 23864 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T15:34:17.996+08:00  INFO 23864 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T15:34:18.133+08:00  INFO 23864 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 112 ms. Found 5 JPA repository interfaces.
-2026-07-17T15:34:19.483+08:00  INFO 23864 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-07-17T15:34:19.538+08:00  INFO 23864 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-07-17T15:34:19.540+08:00  INFO 23864 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
-2026-07-17T15:34:19.662+08:00  INFO 23864 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3069 ms
-2026-07-17T15:34:20.124+08:00  INFO 23864 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-07-17T15:34:20.279+08:00  INFO 23864 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
-2026-07-17T15:34:21.300+08:00  INFO 23864 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-07-17T15:34:21.387+08:00  INFO 23864 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-07-17T15:34:21.597+08:00  INFO 23864 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@4b09d1c3
-2026-07-17T15:34:21.601+08:00  INFO 23864 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-07-17T15:34:21.704+08:00  INFO 23864 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-07-27T19:30:41.204+02:00  INFO 14420 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.3 with PID 14420 (C:\Users\Davison Fero\Desktop\church-backend\target\classes started by Davison Fero in C:\Users\Davison Fero\Desktop\church-backend)
+2026-07-27T19:30:41.217+02:00  INFO 14420 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-07-27T19:30:42.827+02:00  INFO 14420 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-27T19:30:42.974+02:00  INFO 14420 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 122 ms. Found 5 JPA repository interfaces.
+2026-07-27T19:30:44.204+02:00  INFO 14420 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-07-27T19:30:44.229+02:00  INFO 14420 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-27T19:30:44.229+02:00  INFO 14420 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-07-27T19:30:44.559+02:00  INFO 14420 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3242 ms
+2026-07-27T19:30:45.113+02:00  INFO 14420 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-07-27T19:30:45.245+02:00  INFO 14420 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-07-27T19:30:46.151+02:00  INFO 14420 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-27T19:30:46.243+02:00  INFO 14420 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-27T19:30:47.946+02:00  INFO 14420 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@40538370
+2026-07-27T19:30:47.953+02:00  INFO 14420 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-27T19:30:48.079+02:00  INFO 14420 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [jdbc:sqlite:church.db]
 	Database driver: SQLite JDBC
 	Database dialect: SQLiteDialect
@@ -108,65 +24,24 @@ Consider renaming one of the beans or enabling overriding by setting spring.main
 	Pool: DataSourceConnectionProvider
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-07-17T15:34:23.892+08:00  INFO 23864 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-07-17T15:34:23.997+08:00  INFO 23864 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-07-17T15:34:24.158+08:00  INFO 23864 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-07-17T15:34:24.714+08:00  WARN 23864 --- [church-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-07-17T15:34:24.861+08:00  WARN 23864 --- [church-backend] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-07-27T19:30:50.004+02:00  INFO 14420 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-27T19:30:50.100+02:00  INFO 14420 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-27T19:30:50.279+02:00  INFO 14420 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-27T19:30:50.776+02:00  WARN 14420 --- [church-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-27T19:30:50.923+02:00  WARN 14420 --- [church-backend] [main] .s.a.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: a86c9500-9d88-4df8-8819-86e939a5a940
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2026-07-17T15:34:24.879+08:00  INFO 23864 --- [church-backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-07-17T15:34:25.679+08:00  INFO 23864 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
-2026-07-17T15:34:25.687+08:00  INFO 23864 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 10.098 seconds (process running for 10.957)
-2026-07-17T15:35:56.125+08:00  INFO 23864 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
-2026-07-17T15:35:56.145+08:00  INFO 23864 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
-2026-07-17T15:35:56.154+08:00  INFO 23864 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-07-17T15:35:56.160+08:00  INFO 23864 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-07-17T15:35:56.167+08:00  INFO 23864 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-2026-07-17T15:37:16.702+08:00  INFO 18984 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 18984 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
-2026-07-17T15:37:16.709+08:00  INFO 18984 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-07-17T15:37:18.210+08:00  INFO 18984 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-07-17T15:37:18.346+08:00  INFO 18984 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 121 ms. Found 5 JPA repository interfaces.
-2026-07-17T15:37:19.347+08:00  INFO 18984 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-07-17T15:37:19.385+08:00  INFO 18984 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-07-17T15:37:19.387+08:00  INFO 18984 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
-2026-07-17T15:37:19.530+08:00  INFO 18984 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2713 ms
-2026-07-17T15:37:19.992+08:00  INFO 18984 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-07-17T15:37:20.107+08:00  INFO 18984 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
-2026-07-17T15:37:21.000+08:00  INFO 18984 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-07-17T15:37:21.078+08:00  INFO 18984 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-07-17T15:37:21.268+08:00  INFO 18984 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@3fe8ad3f
-2026-07-17T15:37:21.272+08:00  INFO 18984 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-07-17T15:37:21.357+08:00  INFO 18984 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-	Database JDBC URL [jdbc:sqlite:church.db]
-	Database driver: SQLite JDBC
-	Database dialect: SQLiteDialect
-	Database version: 3.53.2
-	Default catalog/schema: undefined/undefined
-	Autocommit mode: undefined/unknown
-	Isolation level: SERIALIZABLE [default SERIALIZABLE]
-	JDBC fetch size: none
-	Pool: DataSourceConnectionProvider
-	Minimum pool size: undefined/unknown
-	Maximum pool size: undefined/unknown
-2026-07-17T15:37:23.325+08:00  INFO 18984 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-07-17T15:37:23.419+08:00  INFO 18984 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-07-17T15:37:23.563+08:00  INFO 18984 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-07-17T15:37:24.090+08:00  WARN 18984 --- [church-backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-07-17T15:37:24.234+08:00  WARN 18984 --- [church-backend] [main] .s.a.UserDetailsServiceAutoConfiguration : 
-
-Using generated security password: afb5a803-4da0-4b4c-acc5-88730aec2111
+Using generated security password: eed42803-a397-4a03-8fa5-011e1d0ce953
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-07-17T15:37:24.255+08:00  INFO 18984 --- [church-backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-07-17T15:37:24.996+08:00  INFO 18984 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
-2026-07-17T15:37:25.005+08:00  INFO 18984 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 9.173 seconds (process running for 10.135)
-2026-07-17T15:38:04.075+08:00  INFO 18984 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
-2026-07-17T15:38:04.099+08:00  INFO 18984 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
-2026-07-17T15:38:04.110+08:00  INFO 18984 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-07-17T15:38:04.114+08:00  INFO 18984 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-07-17T15:38:04.120+08:00  INFO 18984 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-07-27T19:30:50.946+02:00  INFO 14420 --- [church-backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-07-27T19:30:51.798+02:00  INFO 14420 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-07-27T19:30:51.810+02:00  INFO 14420 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 12.0 seconds (process running for 12.746)
+2026-07-27T19:32:10.205+02:00  INFO 14420 --- [church-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-27T19:32:10.206+02:00  INFO 14420 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-27T19:32:10.211+02:00  INFO 14420 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-07-27T19:48:43.568+02:00  INFO 14420 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-27T19:48:43.593+02:00  INFO 14420 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-07-27T19:48:43.598+02:00  INFO 14420 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-27T19:48:43.601+02:00  INFO 14420 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-27T19:48:43.606+02:00  INFO 14420 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
