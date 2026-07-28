@@ -24,9 +24,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody AppUser registrationRequest) {
-        authService.registerAdminRequest(registrationRequest.getUsername(), registrationRequest.getPassword());
-        return "Admin registration request submitted successfully! Waiting for System Admin approval.";
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registrationRequest) {
+    authService.registerAdminRequest(registrationRequest.getUsername(), registrationRequest.getPassword());
+    return ResponseEntity.ok("Admin registration request submitted successfully!");
     }
 
     // New Endpoint: Process login and return JWT Response object
