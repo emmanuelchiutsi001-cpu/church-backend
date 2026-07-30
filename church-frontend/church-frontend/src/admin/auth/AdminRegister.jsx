@@ -3,200 +3,355 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import catholic from "../../assets/catholic.jpg";
 
+
 function AdminRegister() {
 
   const navigate = useNavigate();
 
+
   const [form, setForm] = useState({
+
     username: "",
+    email: "",
+    parish: "",
     password: "",
     confirmPassword: "",
+
   });
+
+
 
   const [loading, setLoading] = useState(false);
 
+
+
   const handleChange = (e) => {
+
     setForm({
+
       ...form,
+
       [e.target.name]: e.target.value,
+
     });
+
   };
+
+
+
+
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match.");
+
+
+    if(form.password !== form.confirmPassword){
+
+      alert("Passwords do not match");
+
       return;
+
     }
+
+
 
     setLoading(true);
 
-    try {
+
+
+    try{
+
 
       const response = await axios.post(
+
         "http://localhost:8080/api/auth/register",
+
         {
+
           username: form.username,
+
+          email: form.email,
+
+          parish: form.parish,
+
           password: form.password,
+
         }
+
       );
+
+
 
       alert(response.data);
 
+
+
       navigate("/admin/waiting");
 
-    } catch (error) {
 
-      console.error(error);
 
-      if (error.response) {
-        alert(error.response.data);
-      } else {
-        alert("Unable to connect to the server.");
-      }
+    }catch(error){
 
-    } finally {
+
+      console.log(error);
+
+
+      alert(
+        error.response?.data ||
+        "Server connection failed"
+      );
+
+
+    }finally{
 
       setLoading(false);
 
     }
 
+
   };
 
-  return (
 
-    <div
-      className="container-fluid d-flex justify-content-center align-items-center"
-      style={{
-        minHeight: "100vh",
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url(${catholic})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
-      }}
-    >
 
-      <div
-        className="card shadow-lg border-0"
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          borderRadius: "15px",
-          background: "rgba(255,255,255,0.15)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255,255,255,0.3)"
-        }}
-      >
 
-        <div className="card-body p-4 text-white">
 
-          <div className="text-center mb-4">
+return (
 
-            <h3 className="fw-bold text-white">
-              Parish Admin Registration
-            </h3>
+<div
+className="container-fluid d-flex justify-content-center align-items-center"
+style={{
+minHeight:"100vh",
+backgroundImage:`linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url(${catholic})`,
+backgroundSize:"cover"
+}}
+>
 
-            <p className="text-white-50 mb-0">
-              Register and wait for approval.
-            </p>
 
-          </div>
 
-          <form onSubmit={handleSubmit}>
+<div
+className="card shadow-lg"
+style={{
+width:"420px",
+background:"rgba(255,255,255,.15)",
+backdropFilter:"blur(10px)"
+}}
+>
 
-            <div className="mb-3">
 
-              <label className="form-label fw-semibold text-white">
-                Username
-              </label>
+<div className="card-body p-4 text-white">
 
-              <input
-                type="text"
-                name="username"
-                className="form-control"
-                placeholder="Enter username"
-                value={form.username}
-                onChange={handleChange}
-                required
-              />
 
-            </div>
 
-            <div className="mb-3">
+<h3 className="text-center mb-4">
 
-              <label className="form-label fw-semibold text-white">
-                Password
-              </label>
+Parish Admin Registration
 
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                placeholder="Enter password"
-                value={form.password}
-                onChange={handleChange}
-                required
-              />
+</h3>
 
-            </div>
 
-            <div className="mb-4">
 
-              <label className="form-label fw-semibold text-white">
-                Confirm Password
-              </label>
 
-              <input
-                type="password"
-                name="confirmPassword"
-                className="form-control"
-                placeholder="Confirm password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                required
-              />
+<form onSubmit={handleSubmit}>
 
-            </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary w-100"
-              disabled={loading}
-            >
-              {loading ? "Registering..." : "Register"}
-            </button>
+<div className="mb-3">
 
-          </form>
+<label>
+Username
+</label>
 
-          <hr className="border-light" />
+<input
 
-          <div className="text-center">
+className="form-control"
 
-            <small className="text-white-50">
-              Already have an approved account?
-            </small>
+name="username"
 
-            <br />
+value={form.username}
 
-            <Link
-              to="/admin/login"
-              className="fw-bold text-white text-decoration-none"
-            >
-              Login Here
-            </Link>
+onChange={handleChange}
 
-          </div>
+required
 
-        </div>
+/>
 
-      </div>
+</div>
 
-    </div>
 
-  );
+
+
+
+<div className="mb-3">
+
+<label>
+Email
+</label>
+
+<input
+
+type="email"
+
+className="form-control"
+
+name="email"
+
+value={form.email}
+
+onChange={handleChange}
+
+required
+
+/>
+
+</div>
+
+
+
+
+
+<div className="mb-3">
+
+<label>
+Parish
+</label>
+
+
+<input
+
+className="form-control"
+
+name="parish"
+
+value={form.parish}
+
+onChange={handleChange}
+
+required
+
+/>
+
+</div>
+
+
+
+
+
+
+<div className="mb-3">
+
+<label>
+Password
+</label>
+
+
+<input
+
+type="password"
+
+className="form-control"
+
+name="password"
+
+value={form.password}
+
+onChange={handleChange}
+
+required
+
+/>
+
+</div>
+
+
+
+
+
+<div className="mb-3">
+
+<label>
+Confirm Password
+</label>
+
+
+<input
+
+type="password"
+
+className="form-control"
+
+name="confirmPassword"
+
+value={form.confirmPassword}
+
+onChange={handleChange}
+
+required
+
+/>
+
+</div>
+
+
+
+
+
+<button
+
+className="btn btn-primary w-100"
+
+disabled={loading}
+
+>
+
+
+{
+loading ?
+"Registering..." :
+"Register"
+}
+
+
+</button>
+
+
+
+</form>
+
+
+
+
+<hr/>
+
+<div className="text-center">
+
+Already approved?
+
+
+<br/>
+
+<Link to="/admin/login">
+
+Login
+
+</Link>
+
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+</div>
+
+);
+
 
 }
+
 
 export default AdminRegister;

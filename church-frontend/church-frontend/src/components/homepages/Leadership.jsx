@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaUser, FaUsers, FaEnvelope, FaPhone, FaArrowRight } from 'react-icons/fa';
+import { FaUser, FaUsers, FaEnvelope, FaPhone} from 'react-icons/fa';
 
 const Leadership = () => {
   useEffect(() => {

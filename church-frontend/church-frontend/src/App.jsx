@@ -1,10 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 
+
+// ================= COMPONENTS =================
+
 import NavigationBar from "./components/Navbar";
+
+
+
+// ================= PUBLIC PAGES =================
+
 import Home from "./pages/Home";
 import ParishDetails from "./pages/ParishDetails";
 
-// Public Pages - Adjust path based on your actual folder structure
 import AboutUs from "./components/homepages/AboutUs";
 import Leadership from "./components/homepages/Leadership";
 import Deaneries from "./components/homepages/Deaneries";
@@ -16,17 +23,22 @@ import Events from "./components/homepages/Events";
 import Podcast from "./components/homepages/Podcast";
 import JoinUs from "./components/homepages/JoinUs";
 
+
+
+// ================= PARISH ADMIN AUTH =================
+
 import ProtectedRoute from "./admin/auth/ProtectedRoute";
 
-// Authentication
 import AdminRegister from "./admin/auth/AdminRegister";
 import AdminLogin from "./admin/auth/AdminLogin";
 import WaitingApproval from "./admin/auth/WaitingApproval";
 
-// Dashboard
+
+
+// ================= PARISH ADMIN =================
+
 import AdminDashboard from "./admin/AdminDashboard";
 
-// Admin Pages
 import Profile from "./admin/pages/Profile";
 import ParishProfile from "./admin/pages/ParishProfile";
 import AdminEvents from "./admin/pages/Events";
@@ -36,223 +48,405 @@ import Podcasts from "./admin/pages/Podcasts";
 import Executive from "./admin/pages/Executive";
 import Documents from "./admin/pages/Documents";
 
-function App() {
-  return (
-    <Routes>
 
-      {/* ================= PUBLIC WEBSITE ================= */}
 
-      <Route
-        path="/"
-        element={
-          <>
-            <NavigationBar />
-            <Home />
-          </>
-        }
-      />
+// ================= SUPER ADMIN =================
 
-      <Route
-        path="/about"
-        element={
-          <>
-            <NavigationBar />
-            <AboutUs />
-          </>
-        }
-      />
+import SuperAdminLayout from "./components/superadmin/SuperAdminLayout";
+import SuperAdminLogin from "./components/superadmin/SuperAdminLogin";
+import SuperAdminRegister from "./components/superadmin/SuperAdminRegister";
 
-      <Route
-        path="/leadership"
-        element={
-          <>
-            <NavigationBar />
-            <Leadership />
-          </>
-        }
-      />
+import SuperDashboard from "./components/superadmin/SuperDashboard";
+import About from "./components/superadmin/About";
+import Auth from "./components/superadmin/Auth";
+import SuperContact from "./components/superadmin/Contact";
+import SuperDeaneries from "./components/superadmin/Deaneries";
+import SuperEvents from "./components/superadmin/Events";
+import SuperGallery from "./components/superadmin/Gallery";
+import SuperLeadership from "./components/superadmin/Leadershipp";
+import SuperMinistries from "./components/superadmin/Ministries";
+import SuperNews from "./components/superadmin/News";
 
-      <Route
-        path="/deaneries"
-        element={
-          <>
-            <NavigationBar />
-            <Deaneries />
-          </>
-        }
-      />
 
-      <Route
-        path="/ministries"
-        element={
-          <>
-            <NavigationBar />
-            <Ministries />
-          </>
-        }
-      />
 
-      <Route
-        path="/news"
-        element={
-          <>
-            <NavigationBar />
-            <News />
-          </>
-        }
-      />
+// ================= APP =================
 
-      <Route
-        path="/events"
-        element={
-          <>
-            <NavigationBar />
-            <Events />
-          </>
-        }
-      />
 
-      <Route
-        path="/gallery"
-        element={
-          <>
-            <NavigationBar />
-            <Gallery />
-          </>
-        }
-      />
+function App(){
 
-      <Route
-        path="/contact"
-        element={
-          <>
-            <NavigationBar />
-            <Contact />
-          </>
-        }
-      />
 
-      <Route
-        path="/podcast"
-        element={
-          <>
-            <NavigationBar />
-            <Podcast />
-          </>
-        }
-      />
+return (
 
-      <Route
-        path="/join"
-        element={
-          <>
-            <NavigationBar />
-            <JoinUs />
-          </>
-        }
-      />
+<Routes>
 
-      <Route
-        path="/parishes/:slug"
-        element={
-          <>
-            <NavigationBar />
-            <ParishDetails />
-          </>
-        }
-      />
 
-      {/* ================= AUTHENTICATION ================= */}
+{/* ================= PUBLIC WEBSITE ================= */}
 
-      <Route path="/admin/register" element={<AdminRegister />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/waiting" element={<WaitingApproval />} />
 
-      {/* ================= PROTECTED ADMIN ================= */}
-
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/parish"
-        element={
-          <ProtectedRoute>
-            <ParishProfile />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/events"
-        element={
-          <ProtectedRoute>
-            <AdminEvents />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/announcements"
-        element={
-          <ProtectedRoute>
-            <Announcements />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/gallery"
-        element={
-          <ProtectedRoute>
-            <AdminGallery />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/podcasts"
-        element={
-          <ProtectedRoute>
-            <Podcasts />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/executive"
-        element={
-          <ProtectedRoute>
-            <Executive />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/documents"
-        element={
-          <ProtectedRoute>
-            <Documents />
-          </ProtectedRoute>
-        }
-      />
-
-    </Routes>
-  );
+<Route 
+path="/" 
+element={
+<>
+<NavigationBar/>
+<Home/>
+</>
 }
+/>
+
+
+<Route 
+path="/about" 
+element={
+<>
+<NavigationBar/>
+<AboutUs/>
+</>
+}
+/>
+
+
+<Route 
+path="/leadership" 
+element={
+<>
+<NavigationBar/>
+<Leadership/>
+</>
+}
+/>
+
+
+<Route 
+path="/deaneries" 
+element={
+<>
+<NavigationBar/>
+<Deaneries/>
+</>
+}
+/>
+
+
+<Route 
+path="/ministries" 
+element={
+<>
+<NavigationBar/>
+<Ministries/>
+</>
+}
+/>
+
+
+<Route 
+path="/news" 
+element={
+<>
+<NavigationBar/>
+<News/>
+</>
+}
+/>
+
+
+<Route 
+path="/events" 
+element={
+<>
+<NavigationBar/>
+<Events/>
+</>
+}
+/>
+
+
+<Route 
+path="/gallery" 
+element={
+<>
+<NavigationBar/>
+<Gallery/>
+</>
+}
+/>
+
+
+<Route 
+path="/contact" 
+element={
+<>
+<NavigationBar/>
+<Contact/>
+</>
+}
+/>
+
+
+<Route 
+path="/podcast" 
+element={
+<>
+<NavigationBar/>
+<Podcast/>
+</>
+}
+/>
+
+
+<Route 
+path="/join" 
+element={
+<>
+<NavigationBar/>
+<JoinUs/>
+</>
+}
+/>
+
+
+<Route 
+path="/parishes/:slug" 
+element={
+<>
+<NavigationBar/>
+<ParishDetails/>
+</>
+}
+/>
+
+
+
+
+
+{/* ================= AUTH ================= */}
+
+
+<Route 
+path="/admin/register"
+element={<AdminRegister/>}
+/>
+
+
+<Route 
+path="/admin/login"
+element={<AdminLogin/>}
+/>
+
+
+<Route 
+path="/admin/waiting"
+element={<WaitingApproval/>}
+/>
+
+
+
+
+
+{/* ================= PARISH ADMIN ================= */}
+
+
+<Route 
+path="/admin/dashboard"
+element={
+<ProtectedRoute>
+<AdminDashboard/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/profile"
+element={
+<ProtectedRoute>
+<Profile/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/parish"
+element={
+<ProtectedRoute>
+<ParishProfile/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/events"
+element={
+<ProtectedRoute>
+<AdminEvents/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/announcements"
+element={
+<ProtectedRoute>
+<Announcements/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/gallery"
+element={
+<ProtectedRoute>
+<AdminGallery/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/podcasts"
+element={
+<ProtectedRoute>
+<Podcasts/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/executive"
+element={
+<ProtectedRoute>
+<Executive/>
+</ProtectedRoute>
+}
+/>
+
+
+<Route 
+path="/admin/documents"
+element={
+<ProtectedRoute>
+<Documents/>
+</ProtectedRoute>
+}
+/>
+
+
+
+
+
+{/* ================= SUPER ADMIN ================= */}
+
+<Route
+  path="/superadmin/register"
+  element={<SuperAdminRegister />}
+/>
+
+<Route
+  path="/superadmin/login"
+  element={<SuperAdminLogin />}
+/>
+<Route
+path="/superadmin"
+element={<SuperAdminLayout/>}
+>
+
+
+<Route 
+path="dashboard"
+element={<SuperDashboard/>}
+/>
+
+
+<Route 
+path="about"
+element={<About/>}
+/>
+
+
+<Route 
+path="auth"
+element={<Auth/>}
+/>
+
+
+<Route 
+path="contact"
+element={<SuperContact/>}
+/>
+
+
+<Route 
+path="deaneries"
+element={<SuperDeaneries/>}
+/>
+
+
+<Route 
+path="events"
+element={<SuperEvents/>}
+/>
+
+
+<Route 
+path="gallery"
+element={<SuperGallery/>}
+/>
+
+
+<Route 
+path="leadership"
+element={<SuperLeadership/>}
+/>
+
+
+<Route 
+path="ministries"
+element={<SuperMinistries/>}
+/>
+
+
+<Route 
+path="news"
+element={<SuperNews/>}
+/>
+
+
+{/* DEFAULT SUPER ADMIN PAGE */}
+
+<Route 
+index
+element={<SuperDashboard/>}
+/>
+
+
+</Route>
+
+
+
+
+
+{/* ================= 404 ================= */}
+
+
+<Route 
+path="*"
+element={
+<h1>
+Page Not Found
+</h1>
+}
+/>
+
+
+</Routes>
+
+);
+
+}
+
 
 export default App;
