@@ -21,8 +21,6 @@ function ParishDetails() {
 
         <AnnouncementList />
 
-        <EventList />
-
         <GallerySection />
 
         <PodcastSection />
