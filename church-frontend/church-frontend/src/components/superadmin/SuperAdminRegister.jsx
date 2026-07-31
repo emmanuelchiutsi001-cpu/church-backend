@@ -1,216 +1,138 @@
+// SuperAdminRegister.jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Form,
-  Button,
-  Alert,
-} from "react-bootstrap";
-
-const API_URL = "http://localhost:8080/api/auth";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../../utils/axiosConfig"; // ✅ Import apiClient
+// Remove: import axios from "axios";
 
 function SuperAdminRegister() {
-
-  const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+    const navigate = useNavigate();
+    const [form, setForm] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
     });
-  };
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
 
-    setSuccess("");
-    setError("");
-
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-
-      const response = await axios.post(
-        `${API_URL}/register-system-admin`,
-        {
-          username: form.username,
-          password: form.password,
+        if (form.password !== form.confirmPassword) {
+            setError("Passwords do not match");
+            return;
         }
-      );
 
-      setSuccess(response.data);
+        setLoading(true);
 
-      setTimeout(() => {
-        navigate("/superadmin/login");
-      }, 1500);
+        try {
+            // ✅ Use apiClient instead of axios
+            const response = await apiClient.post("/auth/register-system-admin", {
+                username: form.username,
+                email: form.email,
+                password: form.password,
+            });
 
-    } catch (err) {
+            alert("System Admin registered successfully!");
+            navigate("/admin/login");
 
-      setError(
-        err.response?.data ||
-        "Registration failed."
-      );
+        } catch (error) {
+            console.error("Registration failed:", error);
+            if (error.response) {
+                setError(error.response.data || "Registration failed");
+            } else if (error.request) {
+                setError("No response from server. Check if backend is running.");
+            } else {
+                setError("Request failed: " + error.message);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    } finally {
+    return (
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card shadow">
+                        <div className="card-body">
+                            <h3 className="text-center mb-4">
+                                <i className="bi bi-shield-lock me-2"></i>
+                                Register System Admin
+                            </h3>
+                            
+                            {error && (
+                                <div className="alert alert-danger">{error}</div>
+                            )}
 
-      setLoading(false);
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-3">
+                                    <label className="form-label">Username</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="username"
+                                        value={form.username}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-    }
+                                <div className="mb-3">
+                                    <label className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-  };
+                                <div className="mb-3">
+                                    <label className="form-label">Password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        name="password"
+                                        value={form.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-  return (
+                                <div className="mb-3">
+                                    <label className="form-label">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        name="confirmPassword"
+                                        value={form.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-    <Container
-      fluid
-      className="d-flex justify-content-center align-items-center"
-      style={{
-        minHeight: "100vh",
-        background: "#f5f5f5",
-      }}
-    >
-
-      <Row>
-
-        <Col>
-
-          <Card
-            className="shadow"
-            style={{
-              width: "430px",
-            }}
-          >
-
-            <Card.Body>
-
-              <h3 className="text-center mb-4">
-                Super Admin Registration
-              </h3>
-
-              {success && (
-                <Alert variant="success">
-                  {success}
-                </Alert>
-              )}
-
-              {error && (
-                <Alert variant="danger">
-                  {error}
-                </Alert>
-              )}
-
-              <Form onSubmit={handleSubmit}>
-
-                <Form.Group className="mb-3">
-
-                  <Form.Label>
-                    Username
-                  </Form.Label>
-
-                  <Form.Control
-                    type="text"
-                    name="username"
-                    value={form.username}
-                    onChange={handleChange}
-                    required
-                  />
-
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-
-                  <Form.Label>
-                    Password
-                  </Form.Label>
-
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                  />
-
-                </Form.Group>
-
-                <Form.Group className="mb-4">
-
-                  <Form.Label>
-                    Confirm Password
-                  </Form.Label>
-
-                  <Form.Control
-                    type="password"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-
-                </Form.Group>
-
-                <Button
-                  type="submit"
-                  className="w-100"
-                  disabled={loading}
-                >
-
-                  {loading
-                    ? "Creating Account..."
-                    : "Register"}
-
-                </Button>
-
-              </Form>
-
-              <hr />
-
-              <div className="text-center">
-
-                Already have an account?
-
-                <br />
-
-                <Link
-                  to="/superadmin/login"
-                >
-                  Login Here
-                </Link>
-
-              </div>
-
-            </Card.Body>
-
-          </Card>
-
-        </Col>
-
-      </Row>
-
-    </Container>
-
-  );
-
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary w-100"
+                                    disabled={loading}
+                                >
+                                    {loading ? "Registering..." : "Register System Admin"}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default SuperAdminRegister;
