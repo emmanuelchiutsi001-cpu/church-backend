@@ -1,5 +1,7 @@
 package com.church.church_backend;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -26,8 +31,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 🌟 ADD THIS BEAN: This tells Spring Boot exactly how to handle authentication 
-    // and officially stops it from generating that default fallback password!
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -36,21 +39,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF since JWTs are stateless tokens
+            // 🌟 1. Enable CORS using our custom configuration bean below
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 2. Disable CSRF since JWTs are stateless tokens
+            .csrf(csrf -> csrf.disable()) 
+            
             .authorizeHttpRequests(auth -> auth
-                // 1. Completely public read-only paths for anyone browsing via JavaScript
+                // Explicitly allow preflight OPTIONS requests for all endpoints
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // Completely public read-only paths
                 .requestMatchers(HttpMethod.GET, "/api/members", "/api/events").permitAll()
                 
-                // 2. Open login & registration options
+                // Open login & registration options
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 
-                // 🌟 NEW RULE: Let your ChurchFileController handle the custom Header/Role checking logic!
+                // Custom Header/Role checking logic for files
                 .requestMatchers("/api/files/**").permitAll() 
                 
-                // 3. Only System Admins can pull pending lists or hit approval switches
+                // Only System Admins can pull pending lists or hit approval switches
                 .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
                 
-                // 4. Modifying church records, writing announcements, or submitting attendance requires valid admin signatures
+                // Modifying church records or submitting attendance requires valid admin signatures
                 .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
                 .requestMatchers("/api/attendance/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
@@ -63,5 +74,27 @@ public class SecurityConfig {
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-     }
+    }
+
+    // 🌟 ADD THIS BEAN: Configures global CORS rules for Spring Security
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Allow requests from your React frontend origin (Vite default port 5173)
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        
+        // Allow standard HTTP methods
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        
+        // Allow headers sent by Axios (including Authorization header)
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        
+        // Allow credentials (e.g., cookies or auth headers)
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

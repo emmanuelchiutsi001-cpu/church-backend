@@ -1,5 +1,6 @@
 package com.church.church_backend;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,19 +8,28 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
 
-    // 0.12.5 securely generates keys directly via the Jwts.SIG helper
-    private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
+    // 🌟 Static SecretKey derived from application.properties to survive restarts
+    private final SecretKey secretKey;
 
     // Token expiration time: 24 Hours (in milliseconds)
     private final long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
+
+    // Inject secret from properties, with a secure 256-bit fallback key
+    public JwtUtil(
+        @Value("${jwt.secret:YourSuperSecretKeyThatIsAtLeast32BytesLongForSecurity123!}") String secret
+    ) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     // 1. Extract username from the token
     public String extractUsername(String token) {
@@ -45,10 +55,10 @@ public class JwtUtil {
     // Modern 0.12.x way to parse claims using verifyWith() and getPayload()
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey) // Replaces setSigningKey()
+                .verifyWith(secretKey) // Uses persistent secretKey
                 .build()
-                .parseSignedClaims(token) // Replaces parseClaimsJws()
-                .getPayload(); // Replaces getBody()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -62,11 +72,11 @@ public class JwtUtil {
         
         // Modern 0.12.x fluent builder API
         return Jwts.builder()
-                .claims(claims) // Replaces setClaims()
-                .subject(username) // Replaces setSubject()
+                .claims(claims)
+                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-                .signWith(secretKey) // Replaces signWith(key, Algorithm)
+                .signWith(secretKey)
                 .compact();
     }
 
