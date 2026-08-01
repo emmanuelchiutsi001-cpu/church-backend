@@ -47,13 +47,13 @@ function AdminDashboard() {
             >
 
 
-              <h1 className="fw-bold text-primary mb-3">
+              <h1 className="fw-bold text-primary mb-2">
                 Welcome to Agnes & Alois Parish Portal
               </h1>
 
 
 
-              <p className="text-muted fs-5">
+              <p className="text-muted fs-4">
                 Manage your parish profile, events, announcements,
                 gallery, podcasts, executive members and documents
                 from this administration portal.
