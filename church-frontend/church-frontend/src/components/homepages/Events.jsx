@@ -1,153 +1,240 @@
-import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { FaCalendar, FaClock, FaMapMarkerAlt, FaArrowRight, FaSearch } from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Badge,
+} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  FaCalendar,
+  FaClock,
+  FaMapMarkerAlt,
+  FaArrowRight,
+  FaSearch,
+  FaStar,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+const API_URL = "http://localhost:8080/api/events";
 
 const Events = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const [filter, setFilter] = useState("All");
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [filter, setFilter] = useState('All');
-
-  const categories = ['All', 'Masses', 'Pilgrimages', 'Youth', 'Conferences', 'Workshops'];
-
-  const events = [
-    {
-      id: 1,
-      title: 'Annual Pilgrimage to Marian Shrine',
-      category: 'Pilgrimages',
-      date: 'August 15, 2026',
-      time: '6:00 AM - 6:00 PM',
-      location: 'Marian Shrine, Harare',
-      description: 'Join the Archdiocese for the annual pilgrimage to the Marian Shrine. A day of prayer, reflection, and community.',
-      featured: true,
-    },
-    {
-      id: 2,
-      title: 'Youth Leadership Conference',
-      category: 'Youth',
-      date: 'September 5-7, 2026',
-      time: '9:00 AM - 5:00 PM',
-      location: 'Archdiocesan Retreat Center',
-      description: 'A three-day conference for young leaders in the Archdiocese. Workshops, talks, and team-building activities.',
-      featured: true,
-    },
-    {
-      id: 3,
-      title: 'Ordination Mass',
-      category: 'Masses',
-      date: 'October 12, 2026',
-      time: '10:00 AM',
-      location: 'Cathedral of the Sacred Heart',
-      description: 'Ordination of new priests for the Archdiocese of Harare. All are welcome to attend.',
-      featured: false,
-    },
-    {
-      id: 4,
-      title: 'Catechetical Workshop',
-      category: 'Workshops',
-      date: 'October 20, 2026',
-      time: '8:30 AM - 4:00 PM',
-      location: 'Pastoral Center',
-      description: 'Formation workshop for catechists and religious educators. Focus on new catechetical methods.',
-      featured: false,
-    },
-    {
-      id: 5,
-      title: 'Family Day Celebration',
-      category: 'Conferences',
-      date: 'November 1, 2026',
-      time: '10:00 AM - 5:00 PM',
-      location: 'Archdiocesan Grounds',
-      description: 'A day of celebration for families in the Archdiocese. Games, food, music, and family activities.',
-      featured: false,
-    },
-    {
-      id: 6,
-      title: 'Advent Retreat',
-      category: 'Conferences',
-      date: 'December 7-9, 2026',
-      time: '6:00 PM - 8:00 PM',
-      location: 'Parish Halls (Various)',
-      description: 'Advent retreats at various parishes across the Archdiocese. Prepare for the coming of Christ.',
-      featured: false,
-    },
+  const categories = [
+    "All",
+    "Masses",
+    "Pilgrimages",
+    "Youth",
+    "Conferences",
+    "Workshops",
   ];
 
-  const filteredEvents = filter === 'All' ? events : events.filter(e => e.category === filter);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        setEvents(response.data);
+      } catch (error) {
+        console.log("Error loading events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center py-5"
+      >
+        <h3>Loading Events...</h3>
+      </motion.div>
+    );
+  }
+
+  const filteredEvents =
+    filter === "All"
+      ? events
+      : events.filter((event) => event.category === filter);
+
+  const featuredEvents = events.filter((event) => event.featured);
+
+  // Get 3 events per slide
+  const getVisibleEvents = () => {
+    const start = currentSlide * 3;
+    const end = start + 3;
+    return filteredEvents.slice(start, end);
+  };
+
+  const totalSlides = Math.ceil(filteredEvents.length / 3);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+    }),
+  };
 
   return (
-    <div>
-      {/* HERO */}
-      <section className="bg-primary text-white py-5" style={{ background: 'linear-gradient(135deg, #0D47A1, #1a237e)' }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* HERO SECTION */}
+      <section
+        className="text-white py-5"
+        style={{
+          background: "linear-gradient(135deg, #0D47A1, #1565C0, #42A5F5)",
+        }}
+      >
         <Container className="py-4">
           <Row>
-            <Col lg={8}>
-              <Badge bg="warning" text="dark" className="mb-3">Events</Badge>
-              <h1 className="display-4 fw-bold">Upcoming Events</h1>
-              <p className="lead text-white-50">
-                Stay connected with the life of the Archdiocese through our events and programs.
-              </p>
+            <Col lg={7}>
+              <motion.div
+                initial={{ x: -60, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.7 }}
+              >
+                <Badge bg="light" text="primary" className="mb-3 px-3 py-2">
+                  <FaStar className="me-1" /> Upcoming Events
+                </Badge>
+                <h1 className="display-3 fw-bold mb-3">Discover & Connect</h1>
+                <p className="lead text-white-50">
+                  Stay connected with the life of the Archdiocese through our
+                  events and programs.
+                </p>
+              </motion.div>
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* CATEGORY FILTER */}
-      <section className="py-4 bg-light border-bottom">
+      {/* FILTER SECTION */}
+      <section className="py-4 bg-white shadow-sm">
         <Container>
           <Row className="align-items-center">
             <Col lg={3} className="mb-2 mb-lg-0">
               <div className="d-flex align-items-center">
-                <FaSearch className="text-muted me-2" />
+                <FaSearch className="text-primary me-2" />
                 <span className="fw-bold">Filter Events:</span>
               </div>
             </Col>
             <Col lg={9}>
-              <div className="d-flex flex-wrap gap-2">
-                {categories.map((cat, idx) => (
-                  <Button 
-                    key={idx} 
-                    variant={filter === cat ? 'warning' : 'outline-secondary'} 
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="d-flex flex-wrap gap-2"
+              >
+                {categories.map((cat, index) => (
+                  <Button
+                    key={index}
+                    variant={filter === cat ? "primary" : "outline-primary"}
                     size="sm"
-                    onClick={() => setFilter(cat)}
+                    onClick={() => {
+                      setFilter(cat);
+                      setCurrentSlide(0);
+                    }}
+                    className="px-3"
                   >
                     {cat}
                   </Button>
                 ))}
-              </div>
+              </motion.div>
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* FEATURED EVENT */}
-      {filter === 'All' && (
-        <section className="py-5">
+      {/* FEATURED EVENTS */}
+      {filter === "All" && featuredEvents.length > 0 && (
+        <section className="py-5 bg-light">
           <Container>
-            <Row className="mb-4">
-              <Col>
-                <Badge bg="warning" text="dark" className="mb-2">Featured Event</Badge>
-                <h2 className="display-6 fw-bold">Don't Miss These</h2>
-              </Col>
-            </Row>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-4"
+            >
+              <Badge bg="primary" className="mb-2 px-3 py-2">
+                <FaStar className="me-1" /> Featured
+              </Badge>
+              <h2 className="display-6 fw-bold">Don't Miss These Events</h2>
+            </motion.div>
             <Row>
-              {events.filter(e => e.featured).map((event) => (
+              {featuredEvents.slice(0, 2).map((event, idx) => (
                 <Col key={event.id} lg={6} className="mb-4">
-                  <Card className="h-100 shadow-sm border-warning border-2">
-                    <Card.Body className="p-4">
-                      <Badge bg="warning" text="dark" className="mb-2">{event.category}</Badge>
-                      <Card.Title className="fw-bold h4">{event.title}</Card.Title>
-                      <div className="d-flex flex-wrap gap-3 mb-3">
-                        <span className="text-muted small"><FaCalendar className="me-1" /> {event.date}</span>
-                        <span className="text-muted small"><FaClock className="me-1" /> {event.time}</span>
-                        <span className="text-muted small"><FaMapMarkerAlt className="me-1" /> {event.location}</span>
-                      </div>
-                      <Card.Text className="text-muted">{event.description}</Card.Text>
-                      <Button variant="warning">Register Now <FaArrowRight className="ms-2" /></Button>
-                    </Card.Body>
-                  </Card>
+                  <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.15 }}
+                  >
+                    <Card className="h-100 shadow border-0">
+                      <Card.Body className="p-4">
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                          <Badge bg="primary">{event.category || "General"}</Badge>
+                          <Badge bg="warning" text="dark">
+                            Featured
+                          </Badge>
+                        </div>
+                        <Card.Title className="fw-bold h4 mb-3">
+                          {event.title}
+                        </Card.Title>
+                        <div className="d-flex flex-wrap gap-3 mb-3">
+                          <span className="text-muted small">
+                            <FaCalendar className="me-1 text-primary" />
+                            {event.eventDate}
+                          </span>
+                          <span className="text-muted small">
+                            <FaClock className="me-1 text-primary" />
+                            {event.time || "TBA"}
+                          </span>
+                          <span className="text-muted small">
+                            <FaMapMarkerAlt className="me-1 text-primary" />
+                            {event.location}
+                          </span>
+                        </div>
+                        <Card.Text className="text-muted">
+                          {event.description || "Church event"}
+                        </Card.Text>
+                        <Button variant="primary">
+                          Register Now
+                          <FaArrowRight className="ms-2" />
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </motion.div>
                 </Col>
               ))}
             </Row>
@@ -155,73 +242,195 @@ const Events = () => {
         </section>
       )}
 
-      {/* EVENT CARDS */}
-      <section className="py-5 bg-light">
+      {/* SLIDING EVENTS CARDS */}
+      <section className="py-5">
         <Container>
-          <Row className="text-center mb-4">
-            <Col>
-              <h2 className="display-6 fw-bold">
-                {filter === 'All' ? 'All Events' : `${filter} Events`}
-              </h2>
-              <p className="text-muted">Join us for these upcoming events in the Archdiocese.</p>
-            </Col>
-          </Row>
-          <Row>
-            {filteredEvents.map((event) => (
-              <Col key={event.id} lg={4} md={6} className="mb-4">
-                <Card className="h-100 shadow-sm">
-                  <Card.Body>
-                    <Badge bg="warning" text="dark" className="mb-2">{event.category}</Badge>
-                    <Card.Title className="fw-bold h5">{event.title}</Card.Title>
-                    <div className="mb-3">
-                      <div className="text-muted small"><FaCalendar className="me-1" /> {event.date}</div>
-                      <div className="text-muted small"><FaClock className="me-1" /> {event.time}</div>
-                      <div className="text-muted small"><FaMapMarkerAlt className="me-1" /> {event.location}</div>
-                    </div>
-                    <Card.Text className="text-muted small">{event.description}</Card.Text>
-                    <Button variant="outline-warning" size="sm">View Details</Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-          <div className="text-center mt-4">
-            <Button variant="warning" size="lg">View Full Calendar</Button>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-5"
+          >
+            <h2 className="display-6 fw-bold">
+              {filter === "All" ? "All Events" : `${filter} Events`}
+            </h2>
+            <p className="text-muted">
+              Swipe through our upcoming events
+            </p>
+          </motion.div>
+
+          <div className="position-relative">
+            {filteredEvents.length > 3 && (
+              <>
+                <Button
+                  variant="outline-primary"
+                  className="position-absolute top-50 start-0 translate-middle-y z-index-1"
+                  style={{ left: "-20px" }}
+                  onClick={prevSlide}
+                >
+                  <FaChevronLeft />
+                </Button>
+                <Button
+                  variant="outline-primary"
+                  className="position-absolute top-50 end-0 translate-middle-y z-index-1"
+                  style={{ right: "-20px" }}
+                  onClick={nextSlide}
+                >
+                  <FaChevronRight />
+                </Button>
+              </>
+            )}
+
+            <Row className="justify-content-center">
+              <AnimatePresence mode="wait">
+                {getVisibleEvents().map((event, idx) => (
+                  <Col key={event.id} lg={4} md={6} className="mb-4">
+                    <motion.div
+                      custom={1}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.3 },
+                      }}
+                    >
+                      <Card className="h-100 shadow-sm border-0 hover-card">
+                        <Card.Body className="p-4">
+                          <Badge bg="primary" className="mb-2">
+                            {event.category || "General"}
+                          </Badge>
+                          <Card.Title className="fw-bold h5 mb-3">
+                            {event.title}
+                          </Card.Title>
+                          <div className="mb-3">
+                            <div className="text-muted small mb-1">
+                              <FaCalendar className="me-1 text-primary" />
+                              {event.eventDate}
+                            </div>
+                            <div className="text-muted small mb-1">
+                              <FaClock className="me-1 text-primary" />
+                              {event.time || "TBA"}
+                            </div>
+                            <div className="text-muted small">
+                              <FaMapMarkerAlt className="me-1 text-primary" />
+                              {event.location}
+                            </div>
+                          </div>
+                          <Card.Text className="text-muted small">
+                            {event.description || "Church event"}
+                          </Card.Text>
+                          <Button variant="outline-primary" size="sm">
+                            View Details
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </motion.div>
+                  </Col>
+                ))}
+              </AnimatePresence>
+            </Row>
+
+            {/* Slide indicators */}
+            {totalSlides > 1 && (
+              <div className="d-flex justify-content-center gap-2 mt-3">
+                {Array.from({ length: totalSlides }).map((_, idx) => (
+                  <Button
+                    key={idx}
+                    variant={currentSlide === idx ? "primary" : "outline-primary"}
+                    size="sm"
+                    className="rounded-circle"
+                    style={{ width: "12px", height: "12px", padding: 0 }}
+                    onClick={() => setCurrentSlide(idx)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-4"
+          >
+            <Button variant="primary" size="lg">
+              View Full Calendar
+              <FaArrowRight className="ms-2" />
+            </Button>
+          </motion.div>
         </Container>
       </section>
 
       {/* SUBMIT EVENT */}
-      <section className="py-5">
+      <section className="py-5 bg-primary text-white">
         <Container>
-          <Row className="justify-content-center text-center">
+          <motion.Row
+            initial={{ scale: 0.95, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            className="justify-content-center text-center"
+          >
             <Col lg={6}>
               <h2 className="display-6 fw-bold">Submit an Event</h2>
-              <p className="text-muted">
-                Do you have an event you'd like to share with the Archdiocese community? Submit it here.
+              <p className="text-white-50">
+                Do you have an event you'd like to share with the Archdiocese
+                community? Submit it here.
               </p>
-              <Button variant="warning" as={Link} to="/contact">Submit Event <FaArrowRight className="ms-2" /></Button>
+              <Button variant="light" as={Link} to="/contact" className="fw-bold">
+                Submit Event
+                <FaArrowRight className="ms-2" />
+              </Button>
             </Col>
-          </Row>
+          </motion.Row>
         </Container>
       </section>
 
-      {/* CTA */}
-      <section className="py-5 bg-primary text-white">
+      {/* CTA SUBSCRIBE */}
+      <section className="py-5" style={{ background: "#f8f9fa" }}>
         <Container>
-          <Row className="justify-content-center text-center">
+          <motion.Row
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            className="justify-content-center text-center"
+          >
             <Col lg={8}>
-              <h2 className="display-6 fw-bold">Stay Updated</h2>
-              <p className="text-white-50">Subscribe to our events calendar and never miss an important event.</p>
+              <h2 className="display-6 fw-bold text-primary">Stay Updated</h2>
+              <p className="text-muted">
+                Subscribe to our events calendar and never miss an important
+                event.
+              </p>
               <div className="mt-4 d-flex flex-column flex-sm-row gap-2 justify-content-center">
-                <input type="email" className="form-control" placeholder="Enter your email" style={{ maxWidth: '300px' }} />
-                <Button variant="warning" className="fw-bold">Subscribe</Button>
+                <input
+                  type="email"
+                  className="form-control form-control-lg"
+                  placeholder="Enter your email"
+                  style={{ maxWidth: "350px" }}
+                />
+                <Button variant="primary" size="lg" className="fw-bold">
+                  Subscribe
+                </Button>
               </div>
             </Col>
-          </Row>
+          </motion.Row>
         </Container>
       </section>
-    </div>
+
+      <style jsx>{`
+        .hover-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 12px 30px rgba(13, 71, 161, 0.15) !important;
+        }
+        .z-index-1 {
+          z-index: 1;
+        }
+      `}</style>
+    </motion.div>
   );
 };
 

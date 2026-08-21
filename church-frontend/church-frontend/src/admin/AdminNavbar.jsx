@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaBell,
   FaUserCircle,
@@ -9,18 +10,64 @@ import {
 import { useNavigate } from "react-router-dom";
 
 
-function AdminNavbar() {
+const API_URL = "http://localhost:8080/api/auth";
 
+
+function AdminNavbar() {
 
   const navigate = useNavigate();
 
   const [showProfile, setShowProfile] = useState(false);
 
+  const [user, setUser] = useState(null);
+
+
+
+  useEffect(() => {
+
+    const fetchUser = async () => {
+
+      try {
+
+        const token = localStorage.getItem("token");
+
+
+        const response = await axios.get(
+          `${API_URL}/me`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }
+        );
+
+
+        setUser(response.data);
+
+
+      } catch(error){
+
+        console.log(
+          "Failed loading user",
+          error
+        );
+
+      }
+
+    };
+
+
+    fetchUser();
+
+
+  }, []);
+
+
 
 
   const logout = () => {
 
-    // later clear token/session
+    localStorage.removeItem("token");
 
     navigate("/admin/login");
 
@@ -29,7 +76,6 @@ function AdminNavbar() {
 
 
   return (
-
 
     <nav
 
@@ -45,10 +91,7 @@ function AdminNavbar() {
     >
 
 
-
       <div className="container-fluid">
-
-
 
 
 
@@ -59,7 +102,7 @@ function AdminNavbar() {
 
           <h5 className="mb-0 fw-bold text-primary">
 
-            St. Alois Catholic Parish
+            {user?.parish?.name || "Parish Portal"}
 
           </h5>
 
@@ -76,21 +119,12 @@ function AdminNavbar() {
 
 
 
-
-
-
         {/* Right Side */}
-
 
         <div className="d-flex align-items-center gap-4">
 
 
-
-
-
-
           {/* Notifications */}
-
 
           <div
 
@@ -103,9 +137,7 @@ function AdminNavbar() {
 
           >
 
-
             <FaBell />
-
 
 
             <span
@@ -123,13 +155,7 @@ function AdminNavbar() {
             </span>
 
 
-
           </div>
-
-
-
-
-
 
 
 
@@ -137,12 +163,7 @@ function AdminNavbar() {
           {/* Profile */}
 
 
-          <div
-
-            className="position-relative"
-
-          >
-
+          <div className="position-relative">
 
 
             <div
@@ -160,7 +181,6 @@ function AdminNavbar() {
             >
 
 
-
               <FaUserCircle
 
                 size={38}
@@ -170,20 +190,19 @@ function AdminNavbar() {
               />
 
 
-
               <div>
 
 
                 <h6 className="mb-0">
 
-                  Tanaka
+                  {user?.username || "Loading..."}
 
                 </h6>
 
 
                 <small className="text-muted">
 
-                  Parish Admin
+                  {user?.role || ""}
 
                 </small>
 
@@ -196,13 +215,6 @@ function AdminNavbar() {
 
 
 
-
-
-
-
-
-
-            {/* Dropdown */}
 
 
             {
@@ -236,7 +248,6 @@ function AdminNavbar() {
 
                     My Profile
 
-
                   </button>
 
 
@@ -258,18 +269,13 @@ function AdminNavbar() {
 
                     Settings
 
-
                   </button>
 
 
 
 
 
-
-
                   <hr className="m-0"/>
-
-
 
 
 
@@ -300,27 +306,17 @@ function AdminNavbar() {
             }
 
 
-
-
-
           </div>
-
-
-
 
 
         </div>
 
 
 
-
-
       </div>
 
 
-
     </nav>
-
 
   );
 

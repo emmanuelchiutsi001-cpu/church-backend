@@ -10,19 +10,24 @@ import {
   Alert,
 } from "react-bootstrap";
 
+
 const API_URL = "http://localhost:8080/api/events";
+
 
 function Events() {
 
 
   const emptyForm = {
+
     title: "",
     description: "",
-    venue: "",
+    location: "",
     eventDate: "",
     eventTime: "",
     image: "",
+
   };
+
 
 
   const [event, setEvent] = useState(emptyForm);
@@ -35,7 +40,27 @@ function Events() {
 
 
 
-  // Refresh after CRUD operations
+
+  const authConfig = {
+
+    headers: {
+
+      Authorization:
+        `Bearer ${localStorage.getItem("token")}`,
+
+      "Content-Type":
+        "application/json",
+
+    },
+
+  };
+
+
+
+
+
+  // Load events after CRUD
+
   const loadEvents = async () => {
 
     try {
@@ -45,9 +70,12 @@ function Events() {
       setEvents(res.data);
 
 
-    } catch (err) {
+    } catch(error) {
 
-      console.error(err);
+      console.error(
+        "Error loading events:",
+        error
+      );
 
     }
 
@@ -55,29 +83,45 @@ function Events() {
 
 
 
-  // First page load
+
+
+
+  // Initial page loading
+
   useEffect(() => {
 
 
     const fetchEvents = async () => {
 
+
       try {
 
+
         const res = await axios.get(API_URL);
+
 
         setEvents(res.data);
 
 
-      } catch (err) {
 
-        console.error(err);
+      } catch(error) {
+
+
+        console.error(
+          "Error loading events:",
+          error
+        );
+
 
       }
+
 
     };
 
 
+
     fetchEvents();
+
 
 
   }, []);
@@ -87,15 +131,22 @@ function Events() {
 
 
 
-  const handleChange = (e) => {
+
+
+
+  const handleChange = (e)=>{
+
 
     setEvent({
 
       ...event,
 
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
+
 
     });
+
 
   };
 
@@ -105,12 +156,16 @@ function Events() {
 
 
 
-  const clearForm = () => {
+
+
+  const clearForm = ()=>{
+
 
     setEditingId(null);
 
     setEvent(emptyForm);
 
+
   };
 
 
@@ -120,43 +175,67 @@ function Events() {
 
 
 
-  const saveEvent = async (e) => {
+
+  const saveEvent = async(e)=>{
+
 
     e.preventDefault();
+
 
 
     try {
 
 
-      if (editingId) {
+
+      if(editingId){
+
 
 
         await axios.put(
+
           `${API_URL}/${editingId}`,
-          event
+
+          event,
+
+          authConfig
+
         );
+
 
 
         setMessage(
-          "Event updated successfully."
+          "Event updated successfully"
         );
 
 
-      } else {
+
+      }
+      else
+      {
+
 
 
         await axios.post(
+
           API_URL,
-          event
+
+          event,
+
+          authConfig
+
         );
 
 
+
         setMessage(
-          "Event created successfully."
+          "Event created successfully"
         );
 
 
       }
+
+
+
 
 
 
@@ -166,14 +245,27 @@ function Events() {
 
 
 
-    } catch (err) {
+
+    }
+    catch(error)
+    {
 
 
-      console.error(err);
+      console.error(
+        "Save error:",
+        error
+      );
+
+
+      setMessage(
+        "Failed to save event"
+      );
 
 
     }
 
+
+
   };
 
 
@@ -183,11 +275,29 @@ function Events() {
 
 
 
-  const editEvent = (item) => {
+
+  const editEvent=(item)=>{
+
 
     setEditingId(item.id);
 
-    setEvent(item);
+
+    setEvent({
+
+      title:item.title || "",
+
+      description:item.description || "",
+
+      location:item.location || "",
+
+      eventDate:item.eventDate || "",
+
+      eventTime:item.eventTime || "",
+
+      image:item.image || "",
+
+    });
+
 
   };
 
@@ -197,12 +307,18 @@ function Events() {
 
 
 
-  const deleteEvent = async (id) => {
 
 
-    if (!window.confirm("Delete this event?")) {
+  const deleteEvent=async(id)=>{
+
+
+    if(!window.confirm(
+      "Delete this event?"
+    )){
+
 
       return;
+
 
     }
 
@@ -211,30 +327,44 @@ function Events() {
     try {
 
 
+
       await axios.delete(
-        `${API_URL}/${id}`
+
+        `${API_URL}/${id}`,
+
+        authConfig
+
       );
+
 
 
       setMessage(
-        "Event deleted successfully."
+        "Event deleted successfully"
       );
+
 
 
       loadEvents();
 
 
 
-    } catch (err) {
+    }
+    catch(error)
+    {
 
 
-      console.error(err);
+      console.error(
+        "Delete error:",
+        error
+      );
 
 
     }
 
 
+
   };
+
 
 
 
@@ -245,16 +375,20 @@ function Events() {
 
   return (
 
+
     <Card className="shadow">
 
 
       <Card.Header>
 
+
         <h3>
           Event Management
         </h3>
 
+
       </Card.Header>
+
 
 
 
@@ -264,23 +398,31 @@ function Events() {
 
 
 
-        {message && (
+        {
+          message && (
 
-          <Alert
 
-            variant="success"
+            <Alert
 
-            dismissible
+              variant="success"
 
-            onClose={() => setMessage("")}
+              dismissible
 
-          >
+              onClose={()=>
+                setMessage("")
+              }
 
-            {message}
+            >
 
-          </Alert>
+              {message}
 
-        )}
+
+            </Alert>
+
+
+          )
+        }
+
 
 
 
@@ -295,9 +437,12 @@ function Events() {
 
 
 
+
             <Col md={6}>
 
+
               <Form.Group className="mb-3">
+
 
                 <Form.Label>
                   Event Title
@@ -312,12 +457,17 @@ function Events() {
 
                   onChange={handleChange}
 
+                  required
+
                 />
+
 
               </Form.Group>
 
 
             </Col>
+
+
 
 
 
@@ -331,17 +481,19 @@ function Events() {
 
 
                 <Form.Label>
-                  Venue
+                  Location
                 </Form.Label>
 
 
                 <Form.Control
 
-                  name="venue"
+                  name="location"
 
-                  value={event.venue}
+                  value={event.location}
 
                   onChange={handleChange}
+
+                  required
 
                 />
 
@@ -350,6 +502,8 @@ function Events() {
 
 
             </Col>
+
+
 
 
 
@@ -390,6 +544,8 @@ function Events() {
 
 
 
+
+
             <Col md={6}>
 
 
@@ -424,6 +580,8 @@ function Events() {
 
 
 
+
+
             <Col md={12}>
 
 
@@ -439,7 +597,7 @@ function Events() {
 
                   as="textarea"
 
-                  rows={5}
+                  rows={4}
 
                   name="description"
 
@@ -460,10 +618,12 @@ function Events() {
 
 
 
+
+
             <Col md={12}>
 
 
-              <Form.Group className="mb-4">
+              <Form.Group className="mb-3">
 
 
                 <Form.Label>
@@ -490,6 +650,7 @@ function Events() {
 
 
 
+
           </Row>
 
 
@@ -499,9 +660,15 @@ function Events() {
 
           <Button type="submit">
 
-            {editingId 
-              ? "Update Event" 
-              : "Save Event"}
+
+            {
+              editingId
+              ?
+              "Update Event"
+              :
+              "Save Event"
+            }
+
 
           </Button>
 
@@ -521,7 +688,9 @@ function Events() {
 
             Clear
 
+
           </Button>
+
 
 
 
@@ -533,18 +702,30 @@ function Events() {
 
 
 
-        <hr />
+
+
+        <hr/>
 
 
 
 
 
 
-        <Table bordered hover responsive>
+
+        <Table
+
+          bordered
+
+          hover
+
+          responsive
+
+        >
 
 
 
           <thead>
+
 
             <tr>
 
@@ -559,11 +740,11 @@ function Events() {
 
 
               <th>
-                Venue
+                Location
               </th>
 
 
-              <th width="170">
+              <th>
                 Actions
               </th>
 
@@ -582,26 +763,36 @@ function Events() {
           <tbody>
 
 
+          {
 
-            {events.map((item) => (
+            events.map((item)=>(
 
 
               <tr key={item.id}>
 
 
                 <td>
+
                   {item.title}
+
                 </td>
 
 
+
                 <td>
+
                   {item.eventDate}
+
                 </td>
+
 
 
                 <td>
-                  {item.venue}
+
+                  {item.location}
+
                 </td>
+
 
 
 
@@ -613,13 +804,17 @@ function Events() {
 
                     size="sm"
 
-                    onClick={() => editEvent(item)}
+                    onClick={()=>
+                      editEvent(item)
+                    }
 
                   >
 
                     Edit
 
+
                   </Button>
+
 
 
 
@@ -633,11 +828,14 @@ function Events() {
 
                     className="ms-2"
 
-                    onClick={() => deleteEvent(item.id)}
+                    onClick={()=>
+                      deleteEvent(item.id)
+                    }
 
                   >
 
                     Delete
+
 
                   </Button>
 
@@ -650,12 +848,12 @@ function Events() {
               </tr>
 
 
-            ))}
+            ))
 
+          }
 
 
           </tbody>
-
 
 
 
@@ -668,12 +866,11 @@ function Events() {
       </Card.Body>
 
 
-
-
     </Card>
 
 
   );
+
 
 }
 

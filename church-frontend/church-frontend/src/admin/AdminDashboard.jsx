@@ -1,21 +1,59 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
 import AdminNavbar from "./AdminNavbar";
 
+const API_URL = "http://localhost:8080/api/auth";
 
 function AdminDashboard() {
+
+  const [user, setUser] = useState(null);
+
+
+  useEffect(() => {
+
+    const fetchUser = async () => {
+
+      try {
+
+        const token = localStorage.getItem("token");
+
+
+        const response = await axios.get(
+          `${API_URL}/me`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }
+        );
+
+
+        setUser(response.data);
+
+
+      } catch(error){
+
+        console.log("Failed to load user", error);
+
+      }
+
+    };
+
+
+    fetchUser();
+
+
+  }, []);
+
 
 
   return (
 
     <div>
 
-
-      {/* Sidebar */}
       <AdminSidebar />
 
-
-
-      {/* Main Content */}
 
       <div
         style={{
@@ -23,15 +61,10 @@ function AdminDashboard() {
         }}
       >
 
-
-        {/* Navbar */}
         <AdminNavbar />
 
 
-
-
         <div className="container-fluid p-4">
-
 
 
           <div
@@ -48,22 +81,50 @@ function AdminDashboard() {
 
 
               <h1 className="fw-bold text-primary mb-2">
-                Welcome to Agnes & Alois Parish Portal
+
+                Welcome 
+                {" "}
+                {user ? user.username : "Loading..."}
+
               </h1>
 
 
 
               <p className="text-muted fs-4">
-                Manage your parish profile, events, announcements,
-                gallery, podcasts, executive members and documents
-                from this administration portal.
+
+                Manage your parish profile, events,
+                announcements, gallery, podcasts,
+                executive members and documents.
+
               </p>
 
 
 
-              <p className="text-secondary mt-3">
-                You are logged in as a Parish Administrator.
-              </p>
+              {user && (
+
+                <>
+
+                <p className="text-secondary mt-3">
+
+                  Role:
+                  {" "}
+                  {user.role}
+
+                </p>
+
+
+                <p className="text-secondary">
+
+                  Parish:
+                  {" "}
+                  {user.parish?.name || "Not Assigned"}
+
+                </p>
+
+
+                </>
+
+              )}
 
 
 
@@ -73,13 +134,10 @@ function AdminDashboard() {
           </div>
 
 
-
         </div>
 
 
-
       </div>
-
 
 
     </div>

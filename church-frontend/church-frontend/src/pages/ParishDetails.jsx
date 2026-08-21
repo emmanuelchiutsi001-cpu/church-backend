@@ -1,3 +1,5 @@
+import { useParams } from "react-router-dom";
+
 import ParishHeader from "../components/parish/ParishHeader";
 import ParishAbout from "../components/parish/ParishAbout";
 import AnnouncementList from "../components/parish/AnnouncementList";
@@ -5,29 +7,33 @@ import GallerySection from "../components/parish/GallerySection";
 import PodcastSection from "../components/parish/PodcastSection";
 import ExecutiveSection from "../components/parish/ExecutiveSection";
 import DocumentSection from "../components/parish/DocumentSection";
-
+import EventSection from "../components/parish/EventSection";
 
 function ParishDetails() {
+
+  const { slug } = useParams();
 
   return (
 
     <div>
 
-      <ParishHeader />
+      <ParishHeader slug={slug} />
 
       <div className="container py-5">
 
-        <ParishAbout />
+        <ParishAbout slug={slug} />
 
-        <AnnouncementList />
+        <AnnouncementList slug={slug} />
 
-        <GallerySection />
+        <EventSection slug={slug} />
 
-        <PodcastSection />
+        <GallerySection slug={slug} />
 
-        <ExecutiveSection />
+        <PodcastSection slug={slug} />
 
-        <DocumentSection />
+        <ExecutiveSection slug={slug} />
+
+        <DocumentSection slug={slug} />
 
       </div>
 
@@ -36,6 +42,5 @@ function ParishDetails() {
   );
 
 }
-
 
 export default ParishDetails;

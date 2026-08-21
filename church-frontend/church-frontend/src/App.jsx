@@ -24,6 +24,11 @@ import Podcast from "./components/homepages/Podcast";
 import JoinUs from "./components/homepages/JoinUs";
 
 
+// Parish public events
+
+import ParishEvent from "./components/parish/EventSection";
+
+
 
 // ================= PARISH ADMIN AUTH =================
 
@@ -54,7 +59,7 @@ import Documents from "./admin/pages/Documents";
 
 import SuperAdminLayout from "./components/superadmin/SuperAdminLayout";
 import SuperAdminLogin from "./components/superadmin/SuperAdminLogin";
-import SuperAdminRegister from "./components/superadmin/SuperAdminRegister";
+
 
 import SuperDashboard from "./components/superadmin/SuperDashboard";
 import About from "./components/superadmin/About";
@@ -69,6 +74,7 @@ import SuperNews from "./components/superadmin/News";
 
 
 
+
 // ================= APP =================
 
 
@@ -80,11 +86,13 @@ return (
 <Routes>
 
 
+
 {/* ================= PUBLIC WEBSITE ================= */}
 
 
-<Route 
-path="/" 
+
+<Route
+path="/"
 element={
 <>
 <NavigationBar/>
@@ -94,8 +102,9 @@ element={
 />
 
 
-<Route 
-path="/about" 
+
+<Route
+path="/about"
 element={
 <>
 <NavigationBar/>
@@ -105,8 +114,9 @@ element={
 />
 
 
-<Route 
-path="/leadership" 
+
+<Route
+path="/leadership"
 element={
 <>
 <NavigationBar/>
@@ -116,8 +126,9 @@ element={
 />
 
 
-<Route 
-path="/deaneries" 
+
+<Route
+path="/deaneries"
 element={
 <>
 <NavigationBar/>
@@ -127,8 +138,9 @@ element={
 />
 
 
-<Route 
-path="/ministries" 
+
+<Route
+path="/ministries"
 element={
 <>
 <NavigationBar/>
@@ -138,8 +150,9 @@ element={
 />
 
 
-<Route 
-path="/news" 
+
+<Route
+path="/news"
 element={
 <>
 <NavigationBar/>
@@ -149,8 +162,12 @@ element={
 />
 
 
-<Route 
-path="/events" 
+
+
+{/* ARCHDIOCESE EVENTS */}
+
+<Route
+path="/events"
 element={
 <>
 <NavigationBar/>
@@ -160,8 +177,27 @@ element={
 />
 
 
-<Route 
-path="/gallery" 
+
+
+
+{/* PARISH EVENTS FROM DATABASE */}
+
+<Route
+path="/parish/events"
+element={
+<>
+<NavigationBar/>
+<ParishEvent/>
+</>
+}
+/>
+
+
+
+
+
+<Route
+path="/gallery"
 element={
 <>
 <NavigationBar/>
@@ -171,8 +207,9 @@ element={
 />
 
 
-<Route 
-path="/contact" 
+
+<Route
+path="/contact"
 element={
 <>
 <NavigationBar/>
@@ -182,8 +219,9 @@ element={
 />
 
 
-<Route 
-path="/podcast" 
+
+<Route
+path="/podcast"
 element={
 <>
 <NavigationBar/>
@@ -193,8 +231,9 @@ element={
 />
 
 
-<Route 
-path="/join" 
+
+<Route
+path="/join"
 element={
 <>
 <NavigationBar/>
@@ -204,8 +243,10 @@ element={
 />
 
 
-<Route 
-path="/parishes/:slug" 
+
+
+<Route
+path="/parishes/:slug"
 element={
 <>
 <NavigationBar/>
@@ -218,22 +259,27 @@ element={
 
 
 
+
+
 {/* ================= AUTH ================= */}
 
 
-<Route 
+
+<Route
 path="/admin/register"
 element={<AdminRegister/>}
 />
 
 
-<Route 
+
+<Route
 path="/admin/login"
 element={<AdminLogin/>}
 />
 
 
-<Route 
+
+<Route
 path="/admin/waiting"
 element={<WaitingApproval/>}
 />
@@ -242,10 +288,13 @@ element={<WaitingApproval/>}
 
 
 
+
+
 {/* ================= PARISH ADMIN ================= */}
 
 
-<Route 
+
+<Route
 path="/admin/dashboard"
 element={
 <ProtectedRoute>
@@ -255,7 +304,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/profile"
 element={
 <ProtectedRoute>
@@ -265,7 +315,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/parish"
 element={
 <ProtectedRoute>
@@ -275,8 +326,9 @@ element={
 />
 
 
-<Route 
-path="/admin/events"
+
+<Route
+path="/admin/eventsection"
 element={
 <ProtectedRoute>
 <AdminEvents/>
@@ -285,7 +337,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/announcements"
 element={
 <ProtectedRoute>
@@ -295,7 +348,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/gallery"
 element={
 <ProtectedRoute>
@@ -305,7 +359,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/podcasts"
 element={
 <ProtectedRoute>
@@ -315,7 +370,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/executive"
 element={
 <ProtectedRoute>
@@ -325,7 +381,8 @@ element={
 />
 
 
-<Route 
+
+<Route
 path="/admin/documents"
 element={
 <ProtectedRoute>
@@ -338,89 +395,103 @@ element={
 
 
 
+
+
 {/* ================= SUPER ADMIN ================= */}
 
-<Route
-  path="/superadmin/register"
-  element={<SuperAdminRegister />}
-/>
+
 
 <Route
-  path="/superadmin/login"
-  element={<SuperAdminLogin />}
+path="/superadmin/login"
+element={<SuperAdminLogin/>}
 />
+
+
+
+
+
 <Route
 path="/superadmin"
 element={<SuperAdminLayout/>}
 >
 
 
-<Route 
+
+<Route
 path="dashboard"
 element={<SuperDashboard/>}
 />
 
 
-<Route 
+
+<Route
 path="about"
 element={<About/>}
 />
 
 
-<Route 
+
+<Route
 path="auth"
 element={<Auth/>}
 />
 
 
-<Route 
+
+<Route
 path="contact"
 element={<SuperContact/>}
 />
 
 
-<Route 
+
+<Route
 path="deaneries"
 element={<SuperDeaneries/>}
 />
 
 
-<Route 
+
+<Route
 path="events"
 element={<SuperEvents/>}
 />
 
 
-<Route 
+
+<Route
 path="gallery"
 element={<SuperGallery/>}
 />
 
 
-<Route 
+
+<Route
 path="leadership"
 element={<SuperLeadership/>}
 />
 
 
-<Route 
+
+<Route
 path="ministries"
 element={<SuperMinistries/>}
 />
 
 
-<Route 
+
+<Route
 path="news"
 element={<SuperNews/>}
 />
 
 
-{/* DEFAULT SUPER ADMIN PAGE */}
 
-<Route 
+<Route
 index
 element={<SuperDashboard/>}
 />
+
 
 
 </Route>
@@ -429,10 +500,13 @@ element={<SuperDashboard/>}
 
 
 
+
+
 {/* ================= 404 ================= */}
 
 
-<Route 
+
+<Route
 path="*"
 element={
 <h1>
@@ -440,6 +514,7 @@ Page Not Found
 </h1>
 }
 />
+
 
 
 </Routes>

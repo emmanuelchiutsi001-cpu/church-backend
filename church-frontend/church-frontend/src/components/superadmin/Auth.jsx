@@ -8,7 +8,12 @@ import {
   Badge,
   Alert,
   Spinner,
+  Modal,
+  Toast,
+  ToastContainer,
 } from "react-bootstrap";
+import { FaCheckCircle, FaTimesCircle, FaUserCheck, FaUserTimes } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = "http://localhost:8080/api/auth";
 
@@ -17,6 +22,16 @@ function SuperAdminAuth() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [loading, setLoading] = useState(true);
+  
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState("");
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+  
+  // Toast states
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState("success");
 
   // JWT Authorization Header
   const authHeaders = () => {
@@ -48,12 +63,9 @@ function SuperAdminAuth() {
     } catch (error) {
       console.error("Failed loading admin requests:", error);
       
-      // Handle specific error cases
       if (error.response?.status === 401) {
         setMessage("⚠️ Session expired. Please login again.");
         setMessageType("danger");
-        // Optionally redirect to login
-        // navigate("/admin/login");
       } else if (error.response?.status === 403) {
         setMessage("⛔ You don't have permission to view pending admins.");
         setMessageType("danger");
@@ -73,47 +85,63 @@ function SuperAdminAuth() {
     loadAdmins();
   }, []);
 
-  // Approve admin
-  const approveAdmin = async (id) => {
-    try {
-      await axios.put(
-        `${API_URL}/approve/${id}`,
-        {},
-        authHeaders()
-      );
-
-      setMessage("✅ Parish admin approved successfully!");
-      setMessageType("success");
-      loadAdmins(); // Refresh list
-    } catch (error) {
-      console.error("Approval failed:", error);
-      setMessage(`❌ Approval failed: ${error.response?.data || error.message}`);
-      setMessageType("danger");
-    }
+  // Open approve modal
+  const handleApproveClick = (admin) => {
+    setSelectedAdmin(admin);
+    setModalAction("approve");
+    setShowModal(true);
   };
 
-  // Reject admin
-  const rejectAdmin = async (id) => {
-    const confirmDelete = window.confirm(
-      "⚠️ Are you sure you want to reject this registration?"
-    );
+  // Open reject modal
+  const handleRejectClick = (admin) => {
+    setSelectedAdmin(admin);
+    setModalAction("reject");
+    setShowModal(true);
+  };
 
-    if (!confirmDelete) return;
+  // Confirm action (Approve or Reject)
+  const confirmAction = async () => {
+    if (!selectedAdmin) return;
 
     try {
-      // Based on your backend docs, DELETE /api/auth/{id}
-      await axios.delete(
-        `${API_URL}/${id}`,
-        authHeaders()
-      );
+      if (modalAction === "approve") {
+        await axios.put(
+          `${API_URL}/approve/${selectedAdmin.id}`,
+          {},
+          authHeaders()
+        );
 
-      setMessage("🗑️ Registration rejected successfully.");
-      setMessageType("success");
+        setToastMessage(`✅ ${selectedAdmin.username} has been approved successfully!`);
+        setToastVariant("success");
+        setShowToast(true);
+        
+        // Show alert message too
+        setMessage(`✅ ${selectedAdmin.username} approved successfully!`);
+        setMessageType("success");
+        
+      } else {
+        await axios.delete(
+          `${API_URL}/${selectedAdmin.id}`,
+          authHeaders()
+        );
+
+        setToastMessage(`🗑️ ${selectedAdmin.username} has been rejected.`);
+        setToastVariant("danger");
+        setShowToast(true);
+        
+        setMessage(`🗑️ ${selectedAdmin.username} rejected successfully.`);
+        setMessageType("danger");
+      }
+      
+      setShowModal(false);
+      setSelectedAdmin(null);
       loadAdmins(); // Refresh list
+      
     } catch (error) {
-      console.error("Reject failed:", error);
-      setMessage(`❌ Rejection failed: ${error.response?.data || error.message}`);
+      console.error("Action failed:", error);
+      setMessage(`❌ Action failed: ${error.response?.data || error.message}`);
       setMessageType("danger");
+      setShowModal(false);
     }
   };
 
@@ -129,105 +157,203 @@ function SuperAdminAuth() {
   }
 
   return (
-    <Card className="shadow">
-      <Card.Header className="bg-primary text-white">
-        <h4 className="mb-0">
-          <i className="bi bi-person-check me-2"></i>
-          Parish Admin Approval Requests
-        </h4>
-      </Card.Header>
+    <>
+      <Card className="shadow">
+        <Card.Header className="bg-primary text-white">
+          <h4 className="mb-0">
+            <i className="bi bi-person-check me-2"></i>
+            Parish Admin Approval Requests
+          </h4>
+        </Card.Header>
 
-      <Card.Body>
-        {message && (
-          <Alert
-            variant={messageType}
-            dismissible
-            onClose={() => setMessage("")}
-            className="mb-3"
-          >
-            {message}
-          </Alert>
-        )}
+        <Card.Body>
+          {message && (
+            <Alert
+              variant={messageType}
+              dismissible
+              onClose={() => setMessage("")}
+              className="mb-3"
+            >
+              {message}
+            </Alert>
+          )}
 
-        <div className="mb-3">
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={loadAdmins}
-          >
-            <i className="bi bi-arrow-clockwise me-1"></i>
-            Refresh
-          </Button>
-          <span className="ms-2 text-muted small">
-            {admins.length} pending request{admins.length !== 1 ? "s" : ""}
-          </span>
-        </div>
+          <div className="mb-3">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={loadAdmins}
+            >
+              <i className="bi bi-arrow-clockwise me-1"></i>
+              Refresh
+            </Button>
+            <span className="ms-2 text-muted small">
+              {admins.length} pending request{admins.length !== 1 ? "s" : ""}
+            </span>
+          </div>
 
-        <Table bordered hover responsive className="align-middle">
-          <thead className="table-light">
-            <tr>
-              <th>#</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Parish</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {admins.length > 0 ? (
-              admins.map((admin, index) => (
-                <tr key={admin.id}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <strong>{admin.username}</strong>
-                  </td>
-                  <td>{admin.email}</td>
-                  <td>{admin.parish || "N/A"}</td>
-                  <td>
-                    <Badge bg="warning" text="dark">
-                      <i className="bi bi-clock-history me-1"></i>
-                      Pending
-                    </Badge>
-                  </td>
-                  <td>
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={() => approveAdmin(admin.id)}
-                      className="me-1"
-                    >
-                      <i className="bi bi-check-lg me-1"></i>
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => rejectAdmin(admin.id)}
-                    >
-                      <i className="bi bi-x-lg me-1"></i>
-                      Reject
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
+          <Table bordered hover responsive className="align-middle">
+            <thead className="table-light">
               <tr>
-                <td colSpan="6" className="text-center py-4 text-muted">
-                  <i className="bi bi-inbox fs-2 d-block mb-2"></i>
-                  No pending admin requests
-                </td>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Parish</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {admins.length > 0 ? (
+                  admins.map((admin, index) => (
+                    <motion.tr
+                      key={admin.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <td>{index + 1}</td>
+                      <td>
+                        <strong>{admin.username}</strong>
+                      </td>
+                      <td>{admin.email}</td>
+                      <td>{admin.parish || "N/A"}</td>
+                      <td>
+                        <Badge bg="warning" text="dark">
+                          <i className="bi bi-clock-history me-1"></i>
+                          Pending
+                        </Badge>
+                      </td>
+                      <td>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => handleApproveClick(admin)}
+                          className="me-1"
+                        >
+                          <FaUserCheck className="me-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleRejectClick(admin)}
+                        >
+                          <FaUserTimes className="me-1" />
+                          Reject
+                        </Button>
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4 text-muted">
+                      <i className="bi bi-inbox fs-2 d-block mb-2"></i>
+                      No pending admin requests
+                    </td>
+                  </tr>
+                )}
+              </AnimatePresence>
+            </tbody>
+          </Table>
 
-        <div className="text-muted small mt-2">
-          <i className="bi bi-info-circle me-1"></i>
-          Only System Admins can approve or reject parish admin registrations.
-        </div>
-      </Card.Body>
-    </Card>
+          <div className="text-muted small mt-2">
+            <i className="bi bi-info-circle me-1"></i>
+            Only System Admins can approve or reject parish admin registrations.
+          </div>
+        </Card.Body>
+      </Card>
+
+      {/* Confirmation Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {modalAction === "approve" ? (
+              <span className="text-success">
+                <FaUserCheck className="me-2" /> Confirm Approval
+              </span>
+            ) : (
+              <span className="text-danger">
+                <FaUserTimes className="me-2" /> Confirm Rejection
+              </span>
+            )}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="text-center py-3">
+            {modalAction === "approve" ? (
+              <>
+                <FaCheckCircle size={50} className="text-success mb-3" />
+                <h5>
+                  Are you sure you want to approve <strong>{selectedAdmin?.username}</strong>?
+                </h5>
+                <p className="text-muted">
+                  This will give them access to the parish admin dashboard.
+                </p>
+                <div className="bg-light p-3 rounded text-start mt-3">
+                  <small>
+                    <strong>Email:</strong> {selectedAdmin?.email}<br />
+                    <strong>Parish:</strong> {selectedAdmin?.parish || "N/A"}
+                  </small>
+                </div>
+              </>
+            ) : (
+              <>
+                <FaTimesCircle size={50} className="text-danger mb-3" />
+                <h5>
+                  Are you sure you want to reject <strong>{selectedAdmin?.username}</strong>?
+                </h5>
+                <p className="text-muted">This action cannot be undone.</p>
+                <div className="bg-light p-3 rounded text-start mt-3">
+                  <small>
+                    <strong>Email:</strong> {selectedAdmin?.email}<br />
+                    <strong>Parish:</strong> {selectedAdmin?.parish || "N/A"}
+                  </small>
+                </div>
+              </>
+            )}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant={modalAction === "approve" ? "success" : "danger"}
+            onClick={confirmAction}
+            className="px-4"
+          >
+            {modalAction === "approve" ? (
+              <><FaCheckCircle className="me-1" /> Yes, Approve</>
+            ) : (
+              <><FaTimesCircle className="me-1" /> Yes, Reject</>
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Toast Notification */}
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          show={showToast}
+          onClose={() => setShowToast(false)}
+          delay={5000}
+          autohide
+          bg={toastVariant}
+        >
+          <Toast.Header closeButton={false}>
+            <strong className="me-auto">
+              {toastVariant === "success" ? "✅ Approved" : "❌ Rejected"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">
+            {toastMessage}
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </>
   );
 }
 
