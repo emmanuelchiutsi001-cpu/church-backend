@@ -41,31 +41,38 @@ public class SecurityConfig {
         http
             // 🌟 1. Enable CORS using our custom configuration bean below
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
+
             // 2. Disable CSRF since JWTs are stateless tokens
             .csrf(csrf -> csrf.disable()) 
-            
+
             .authorizeHttpRequests(auth -> auth
                 // Explicitly allow preflight OPTIONS requests for all endpoints
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 // Completely public read-only paths
                 .requestMatchers(HttpMethod.GET, "/api/members", "/api/events").permitAll()
-                
+
+                // 📸 GALLERY ACCESS: Public/Members can fetch image list and render files
+                .requestMatchers(HttpMethod.GET, "/api/gallery", "/api/gallery/files/**").permitAll()
+
                 // Open login & registration options
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                
+
                 // Custom Header/Role checking logic for files
                 .requestMatchers("/api/files/**").permitAll() 
-                
+
                 // Only System Admins can pull pending lists or hit approval switches
                 .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
-                
+
                 // Modifying church records or submitting attendance requires valid admin signatures
                 .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
                 .requestMatchers("/api/attendance/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
-                
+
+                // 📸 GALLERY MANAGEMENT: Only ADMIN and SYSTEM_ADMIN can upload or delete images
+                .requestMatchers(HttpMethod.POST, "/api/gallery/upload").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+
                 // Every other request inside the app requires general authentication
                 .anyRequest().authenticated()
             );
@@ -76,20 +83,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🌟 ADD THIS BEAN: Configures global CORS rules for Spring Security
+    // Configures global CORS rules for Spring Security
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         // Allow requests from your React frontend origin (Vite default port 5173)
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        
+
         // Allow standard HTTP methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
-        
+
         // Allow headers sent by Axios (including Authorization header)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
-        
+
         // Allow credentials (e.g., cookies or auth headers)
         configuration.setAllowCredentials(true);
 
