@@ -62,16 +62,16 @@ public class SecurityConfig {
                 .requestMatchers("/api/files/**").permitAll() 
 
                 // Only System Admins can pull pending lists or hit approval switches
-                .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasRole("SYSTEM_ADMIN")
+                .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasAuthority("ROLE_SYSTEM_ADMIN")
 
                 // Modifying church records or submitting attendance requires valid admin signatures
-                .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
-                .requestMatchers("/api/attendance/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers("/api/attendance/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
 
-                // 📸 GALLERY MANAGEMENT: Only ADMIN and SYSTEM_ADMIN can upload or delete images
-                .requestMatchers(HttpMethod.POST, "/api/gallery/upload").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyRole("ADMIN", "SYSTEM_ADMIN")
+                // 📸 GALLERY MANAGEMENT: Explicitly check full string authorities to prevent double-prefix issues
+                .requestMatchers(HttpMethod.POST, "/api/gallery/upload").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
 
                 // Every other request inside the app requires general authentication
                 .anyRequest().authenticated()

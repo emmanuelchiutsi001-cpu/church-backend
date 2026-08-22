@@ -42,7 +42,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 username = jwtUtil.extractUsername(jwt);
                 role = jwtUtil.extractRole(jwt);
             } catch (Exception e) {
-                logger.error("JWT validation or parsing failed: " + e.getMessage());
+                logger.error("❌ JWT validation or parsing failed: " + e.getMessage());
             }
         }
 
@@ -51,7 +51,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             
             if (jwtUtil.validateToken(jwt, username)) {
                 
-                // Convert the role string (e.g., "ROLE_ADMIN") into a Spring Authority object
+                // Fallback and log check if role claim is missing from payload
+                if (role == null || role.trim().isEmpty()) {
+                    logger.warn("⚠️ JWT for user '" + username + "' contains NO role claim.");
+                    role = "ROLE_USER"; 
+                } else {
+                    logger.info("🔑 Authenticated user '" + username + "' with Authority: '" + role + "'");
+                }
+
+                // Convert the role string into a Spring GrantedAuthority object
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
                 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
