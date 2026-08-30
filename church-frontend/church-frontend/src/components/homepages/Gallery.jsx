@@ -1,173 +1,286 @@
-import  { useEffect, useState } from 'react';
-import { Container, Row, Col, Button, Badge } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { FaImages, FaCamera, FaArrowRight, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 
-const Gallery = () => {
+const API_BASE_URL = "http://localhost:8080/api/gallery";
+
+function Gallery() {
+  const [images, setImages] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Admin Upload State
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "Masses",
+    description: "",
+    imageUrl: ""
+  });
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+
+  // Helper function to safely extract auth values from localStorage or sessionStorage
+  const getToken = () => localStorage.getItem("token") || sessionStorage.getItem("token");
+  const getRole = () => localStorage.getItem("role") || sessionStorage.getItem("role");
+
+  const token = getToken();
+  const userRole = getRole();
+
+  // Flexible check for Admin authority across common naming conventions
+  const isAdmin =
+    Boolean(token) &&
+    ["ROLE_SYSTEM_ADMIN", "SYSTEM_ADMIN", "ROLE_ADMIN", "ADMIN"].includes(userRole);
+
+  const categories = ["All", "Masses", "Youth", "Community", "Events"];
+
+  // Fetch images from Spring Boot API
+  const fetchGallery = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(API_BASE_URL);
+      setImages(res.data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch gallery images:", err);
+      setError("Unable to load gallery images from backend.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    window.scrollTo(0, 0);
+    fetchGallery();
   }, []);
 
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const categories = ['All', 'Masses', 'Events', 'Youth', 'Pilgrimages', 'Community'];
-
-  const images = [
-    { id: 1, category: 'Masses', title: 'Sunday Mass at Cathedral' },
-    { id: 2, category: 'Masses', title: 'Easter Vigil Celebration' },
-    { id: 3, category: 'Events', title: 'Archdiocesan Synod' },
-    { id: 4, category: 'Events', title: 'Priests Ordination' },
-    { id: 5, category: 'Youth', title: 'Youth Leadership Camp' },
-    { id: 6, category: 'Youth', title: 'World Youth Day Celebration' },
-    { id: 7, category: 'Pilgrimages', title: 'Pilgrimage to Marian Shrine' },
-    { id: 8, category: 'Pilgrimages', title: 'Way of the Cross' },
-    { id: 9, category: 'Community', title: 'Food Distribution Program' },
-    { id: 10, category: 'Community', title: 'School Opening Mass' },
-    { id: 11, category: 'Masses', title: 'Christmas Midnight Mass' },
-    { id: 12, category: 'Events', title: 'Archbishop\'s Installation' },
-  ];
-
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
+  // Handle Form Input Change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCloseModal = () => {
-    setSelectedImage(null);
+  // Upload image handler with active JWT Bearer token
+  const handleUploadSubmit = async (e) => {
+    e.preventDefault();
+    setUploadError(null);
+
+    const activeToken = getToken();
+
+    if (!activeToken) {
+      setUploadError("No authentication token found. Please log in again.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      await axios.post(API_BASE_URL, formData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${activeToken}`
+        }
+      });
+
+      setShowModal(false);
+      setFormData({ title: "", category: "Masses", description: "", imageUrl: "" });
+      fetchGallery(); // Refresh gallery grid
+    } catch (err) {
+      console.error("Upload error response:", err.response);
+      
+      if (err.response?.status === 403) {
+        setUploadError("Access Denied (403): Your account does not have admin permissions to upload to the gallery.");
+      } else if (err.response?.status === 401) {
+        setUploadError("Unauthorized (401): Your session has expired or the security token is invalid. Please log in again.");
+      } else {
+        setUploadError(err.response?.data?.message || "Failed to upload image. Please check backend server logs.");
+      }
+    } finally {
+      setUploading(false);
+    }
   };
+
+  // Filter images based on category
+  const filteredImages =
+    activeCategory === "All"
+      ? images
+      : images.filter((img) => img.category?.toLowerCase() === activeCategory.toLowerCase());
 
   return (
-    <div>
-      {/* HERO */}
-      <section className="bg-primary text-white py-5" style={{ background: 'linear-gradient(135deg, #0D47A1, #1a237e)' }}>
-        <Container className="py-4">
-          <Row>
-            <Col lg={8}>
-              <Badge bg="warning" text="dark" className="mb-3">Gallery</Badge>
-              <h1 className="display-4 fw-bold">Photo Gallery</h1>
-              <p className="lead text-white-50">
-                Capturing moments of faith, community, and celebration in the Archdiocese of Harare.
-              </p>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      {/* CATEGORY FILTER */}
-      <section className="py-4 bg-light border-bottom">
-        <Container>
-          <Row>
-            <Col>
-              <div className="d-flex flex-wrap gap-2">
-                {categories.map((cat, idx) => (
-                  <Button key={idx} variant={idx === 0 ? 'warning' : 'outline-secondary'} size="sm">
-                    {cat}
-                  </Button>
-                ))}
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      {/* GALLERY GRID */}
-      <section className="py-5">
-        <Container>
-          <Row>
-            {images.map((image) => (
-              <Col key={image.id} lg={3} md={4} sm={6} className="mb-4">
-                <div 
-                  className="bg-light rounded shadow-sm d-flex flex-column align-items-center justify-content-center p-4"
-                  style={{ height: '200px', cursor: 'pointer', transition: 'transform 0.3s ease' }}
-                  onClick={() => handleImageClick(image)}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                >
-                  <FaImages size={50} className="text-secondary mb-2" />
-                  <Badge bg="warning" text="dark" className="mb-2">{image.category}</Badge>
-                  <p className="text-muted small text-center mb-0">{image.title}</p>
-                  <small className="text-muted">Click to view</small>
-                </div>
-              </Col>
-            ))}
-          </Row>
-          <div className="text-center mt-4">
-            <Button variant="warning" size="lg">Load More Photos <FaArrowRight className="ms-2" /></Button>
-          </div>
-        </Container>
-      </section>
-
-      {/* LIGHTBOX MODAL */}
-      {selectedImage && (
-        <div 
-          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-          style={{ 
-            backgroundColor: 'rgba(0,0,0,0.85)', 
-            zIndex: 9999,
-            cursor: 'pointer'
-          }}
-          onClick={handleCloseModal}
-        >
-          <div 
-            className="bg-white rounded p-4 text-center position-relative"
-            style={{ maxWidth: '500px', width: '90%' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button 
-              className="btn btn-outline-secondary position-absolute top-0 end-0 m-2"
-              onClick={handleCloseModal}
-              style={{ zIndex: 10 }}
-            >
-              <FaTimes />
+    <div className="py-5" style={{ background: "#f8f9fa", minHeight: "80vh" }}>
+      <div className="container">
+        {/* Header Section */}
+        <div className="text-center mb-4">
+          <span className="badge bg-primary px-3 py-2 mb-2 text-uppercase" style={{ letterSpacing: "2px" }}>
+            Photo Gallery
+          </span>
+          <h1 className="fw-bold display-5 text-dark">Life in Our Parish</h1>
+          <div className="mx-auto my-3" style={{ width: "60px", height: "3px", background: "#0D47A1" }} />
+          <p className="text-muted">Explore moments captured across our masses, youth events, and community projects.</p>
+          
+          {/* Admin Upload Trigger Button */}
+          {isAdmin && (
+            <button className="btn btn-warning mt-2 fw-semibold shadow-sm" onClick={() => setShowModal(true)}>
+              + Upload New Image
             </button>
-            <div className="bg-light rounded d-flex align-items-center justify-content-center" style={{ height: '250px' }}>
-              <FaImages size={80} className="text-secondary" />
-            </div>
-            <h5 className="fw-bold mt-3">{selectedImage.title}</h5>
-            <Badge bg="warning" text="dark" className="mb-2">{selectedImage.category}</Badge>
-            <p className="text-muted small">Photo from the Archdiocese of Harare</p>
-            <div className="d-flex gap-2 justify-content-center">
-              <Button variant="outline-secondary" size="sm">Download</Button>
-              <Button variant="outline-secondary" size="sm">Share</Button>
+          )}
+        </div>
+
+        {/* Category Filters */}
+        <div className="d-flex justify-content-center flex-wrap gap-2 mb-5">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`btn ${activeCategory === cat ? "btn-primary" : "btn-outline-secondary"} rounded-pill px-4`}
+              style={{ transition: "all 0.3s ease" }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Loading / Error States */}
+        {loading && (
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status" />
+          </div>
+        )}
+        
+        {error && <div className="alert alert-danger text-center">{error}</div>}
+
+        {/* Gallery Grid */}
+        {!loading && !error && (
+          <motion.div layout className="row g-4">
+            <AnimatePresence>
+              {filteredImages.map((img) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  key={img.id || img.imageUrl}
+                  className="col-12 col-sm-6 col-md-4"
+                >
+                  <div className="card h-100 border-0 shadow-sm overflow-hidden rounded-4">
+                    <div className="position-relative" style={{ height: "240px" }}>
+                      <img
+                        src={img.imageUrl || img.url}
+                        alt={img.title}
+                        className="w-100 h-100"
+                        style={{ objectFit: "cover" }}
+                      />
+                      <div
+                        className="position-absolute bottom-0 start-0 w-100 p-3"
+                        style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}
+                      >
+                        <span className="badge bg-warning text-dark mb-1">{img.category}</span>
+                        <h6 className="text-white fw-bold mb-0">{img.title}</h6>
+                        {img.description && <p className="text-white-50 small mb-0">{img.description}</p>}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Upload Modal */}
+      {showModal && (
+        <div className="modal d-block tab-index-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 shadow">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold">Upload Gallery Image</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    setShowModal(false);
+                    setUploadError(null);
+                  }}
+                />
+              </div>
+
+              <form onSubmit={handleUploadSubmit}>
+                <div className="modal-body">
+                  {uploadError && <div className="alert alert-danger small mb-3">{uploadError}</div>}
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Category</label>
+                    <select
+                      className="form-select"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                    >
+                      <option value="Masses">Masses</option>
+                      <option value="Youth">Youth</option>
+                      <option value="Community">Community</option>
+                      <option value="Events">Events</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Image URL</label>
+                    <input
+                      type="url"
+                      className="form-control"
+                      name="imageUrl"
+                      placeholder="https://example.com/photo.jpg"
+                      value={formData.imageUrl}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Description</label>
+                    <textarea
+                      className="form-control"
+                      name="description"
+                      rows="2"
+                      value={formData.description}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowModal(false);
+                      setUploadError(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={uploading}>
+                    {uploading ? "Uploading..." : "Save Image"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       )}
-
-      {/* SUBMIT PHOTOS */}
-      <section className="py-5 bg-light">
-        <Container>
-          <Row className="justify-content-center text-center">
-            <Col lg={6}>
-              <FaCamera size={50} className="text-warning mb-3" />
-              <h2 className="display-6 fw-bold">Share Your Photos</h2>
-              <p className="text-muted">
-                Do you have photos from Archdiocese events? Submit them to our gallery.
-              </p>
-              <Button variant="warning" as={Link} to="/contact">Submit Photos <FaArrowRight className="ms-2" /></Button>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      {/* CTA */}
-      <section className="py-5 bg-primary text-white">
-        <Container>
-          <Row className="justify-content-center text-center">
-            <Col lg={8}>
-              <h2 className="display-6 fw-bold">Follow Us</h2>
-              <p className="text-white-50">Stay connected through our social media channels for more updates and photos.</p>
-              <div className="mt-4 d-flex gap-2 justify-content-center flex-wrap">
-                <Button variant="warning" className="fw-bold">Facebook</Button>
-                <Button variant="outline-light">Twitter</Button>
-                <Button variant="outline-light">Instagram</Button>
-                <Button variant="outline-light">YouTube</Button>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
     </div>
   );
-};
+}
 
 export default Gallery;
