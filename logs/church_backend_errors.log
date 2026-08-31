@@ -37,3 +37,171 @@
 2026-08-31T03:39:29.340+08:00  INFO 12808 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-08-31T03:39:29.361+08:00  INFO 12808 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2026-08-31T03:39:29.370+08:00  INFO 12808 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-08-31T14:53:30.075+08:00  INFO 20376 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 20376 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
+2026-08-31T14:53:30.087+08:00  INFO 20376 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-08-31T14:53:32.081+08:00  INFO 20376 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-31T14:53:32.270+08:00  INFO 20376 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 163 ms. Found 8 JPA repository interfaces.
+2026-08-31T14:53:33.536+08:00  INFO 20376 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-08-31T14:53:33.568+08:00  INFO 20376 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-31T14:53:33.569+08:00  INFO 20376 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-31T14:53:33.742+08:00  INFO 20376 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3362 ms
+2026-08-31T14:53:34.207+08:00  INFO 20376 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-31T14:53:34.406+08:00  INFO 20376 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-31T14:53:35.538+08:00  INFO 20376 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-31T14:53:35.623+08:00  INFO 20376 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-08-31T14:53:35.870+08:00  INFO 20376 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@126675fd
+2026-08-31T14:53:35.877+08:00  INFO 20376 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-08-31T14:53:36.001+08:00  INFO 20376 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:church.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.53.2
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-31T14:53:38.768+08:00  INFO 20376 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-31T14:53:38.942+08:00  INFO 20376 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T14:53:39.174+08:00  INFO 20376 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-31T14:53:41.435+08:00  INFO 20376 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-08-31T14:53:41.460+08:00  INFO 20376 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 13.953 seconds (process running for 15.764)
+2026-08-31T15:04:32.819+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-31T15:04:32.826+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-31T15:04:32.843+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 17 ms
+2026-08-31T15:12:48.792+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-4] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:21:22.222+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-10] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:27:51.116+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-1] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:27:52.727+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-2] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:28:55.934+08:00  INFO 20376 --- [church-backend] [http-nio-8080-exec-3] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:29:01.024+08:00  INFO 20376 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-31T15:29:01.052+08:00  INFO 20376 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-08-31T15:29:01.060+08:00  INFO 20376 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:29:01.075+08:00  INFO 20376 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-08-31T15:29:01.079+08:00  INFO 20376 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-08-31T15:29:27.979+08:00  INFO 14740 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 14740 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
+2026-08-31T15:29:27.985+08:00  INFO 14740 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-08-31T15:29:29.816+08:00  INFO 14740 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-31T15:29:29.942+08:00  INFO 14740 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 111 ms. Found 8 JPA repository interfaces.
+2026-08-31T15:29:30.819+08:00  INFO 14740 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-08-31T15:29:30.883+08:00  INFO 14740 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-31T15:29:30.926+08:00  INFO 14740 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-31T15:29:31.145+08:00  INFO 14740 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3065 ms
+2026-08-31T15:29:31.592+08:00  INFO 14740 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-31T15:29:31.757+08:00  INFO 14740 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-31T15:29:33.128+08:00  INFO 14740 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-31T15:29:33.221+08:00  INFO 14740 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-08-31T15:29:33.429+08:00  INFO 14740 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@5be7b749
+2026-08-31T15:29:33.433+08:00  INFO 14740 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-08-31T15:29:33.530+08:00  INFO 14740 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:church.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.53.2
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-31T15:29:35.787+08:00  INFO 14740 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-31T15:29:35.926+08:00  INFO 14740 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:29:36.078+08:00  INFO 14740 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-31T15:29:37.592+08:00  INFO 14740 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-08-31T15:29:37.601+08:00  INFO 14740 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 10.385 seconds (process running for 11.138)
+2026-08-31T15:30:20.737+08:00  INFO 14740 --- [church-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-31T15:30:20.737+08:00  INFO 14740 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-31T15:30:20.740+08:00  INFO 14740 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-08-31T15:30:20.985+08:00  INFO 14740 --- [church-backend] [http-nio-8080-exec-1] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:30:47.155+08:00  INFO 14740 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-31T15:30:47.177+08:00  INFO 14740 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-08-31T15:30:47.187+08:00  INFO 14740 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:30:47.192+08:00  INFO 14740 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-08-31T15:30:47.195+08:00  INFO 14740 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-08-31T15:31:52.843+08:00  INFO 4512 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 4512 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
+2026-08-31T15:31:52.848+08:00  INFO 4512 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-08-31T15:31:54.034+08:00  INFO 4512 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-31T15:31:54.158+08:00  INFO 4512 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 110 ms. Found 8 JPA repository interfaces.
+2026-08-31T15:31:55.100+08:00  INFO 4512 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-08-31T15:31:55.129+08:00  INFO 4512 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-31T15:31:55.131+08:00  INFO 4512 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-31T15:31:55.242+08:00  INFO 4512 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2299 ms
+2026-08-31T15:31:55.514+08:00  INFO 4512 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-31T15:31:55.601+08:00  INFO 4512 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-31T15:31:56.244+08:00  INFO 4512 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-31T15:31:56.307+08:00  INFO 4512 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-08-31T15:31:56.466+08:00  INFO 4512 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@5be7b749
+2026-08-31T15:31:56.469+08:00  INFO 4512 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-08-31T15:31:56.529+08:00  INFO 4512 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:church.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.53.2
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-31T15:31:57.956+08:00  INFO 4512 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-31T15:31:58.030+08:00  INFO 4512 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:31:58.136+08:00  INFO 4512 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-31T15:31:59.274+08:00  INFO 4512 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-08-31T15:31:59.281+08:00  INFO 4512 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 7.131 seconds (process running for 8.073)
+2026-08-31T15:32:16.942+08:00  INFO 4512 --- [church-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-31T15:32:16.943+08:00  INFO 4512 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-31T15:32:16.945+08:00  INFO 4512 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-08-31T15:32:17.150+08:00  INFO 4512 --- [church-backend] [http-nio-8080-exec-1] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:43:04.704+08:00  INFO 4512 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-31T15:43:04.727+08:00  INFO 4512 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-08-31T15:43:04.734+08:00  INFO 4512 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:43:04.741+08:00  INFO 4512 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-08-31T15:43:04.746+08:00  INFO 4512 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-08-31T15:44:32.020+08:00  INFO 18416 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Starting ChurchBackendApplication using Java 25.0.2 with PID 18416 (C:\Users\emmanuel chiutsi\Pictures\church-backend\target\classes started by emmanuel chiutsi in C:\Users\emmanuel chiutsi\Pictures\church-backend)
+2026-08-31T15:44:32.024+08:00  INFO 18416 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-08-31T15:44:33.119+08:00  INFO 18416 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-31T15:44:33.227+08:00  INFO 18416 --- [church-backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 93 ms. Found 8 JPA repository interfaces.
+2026-08-31T15:44:33.929+08:00  INFO 18416 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-08-31T15:44:33.950+08:00  INFO 18416 --- [church-backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-31T15:44:33.951+08:00  INFO 18416 --- [church-backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-31T15:44:34.055+08:00  INFO 18416 --- [church-backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1946 ms
+2026-08-31T15:44:34.303+08:00  INFO 18416 --- [church-backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-31T15:44:34.380+08:00  INFO 18416 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-31T15:44:35.067+08:00  INFO 18416 --- [church-backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-31T15:44:35.127+08:00  INFO 18416 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-08-31T15:44:35.310+08:00  INFO 18416 --- [church-backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@126675fd
+2026-08-31T15:44:35.347+08:00  INFO 18416 --- [church-backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-08-31T15:44:35.497+08:00  INFO 18416 --- [church-backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:sqlite:church.db]
+	Database driver: SQLite JDBC
+	Database dialect: SQLiteDialect
+	Database version: 3.53.2
+	Default catalog/schema: undefined/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: SERIALIZABLE [default SERIALIZABLE]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-31T15:44:37.395+08:00  INFO 18416 --- [church-backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-31T15:44:37.618+08:00  INFO 18416 --- [church-backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T15:44:37.836+08:00  INFO 18416 --- [church-backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-31T15:44:38.924+08:00  INFO 18416 --- [church-backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-08-31T15:44:38.932+08:00  INFO 18416 --- [church-backend] [main] c.c.c.ChurchBackendApplication           : Started ChurchBackendApplication in 7.588 seconds (process running for 8.467)
+2026-08-31T15:45:02.980+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-31T15:45:02.981+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-31T15:45:02.983+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-08-31T15:45:03.175+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-1] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:55:31.638+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-2] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:57:52.958+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-3] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T15:58:09.182+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-4] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T16:04:19.760+08:00  INFO 18416 --- [church-backend] [http-nio-8080-exec-6] c.c.church_backend.JwtRequestFilter      : 🔑 Authenticated user 'mjsysadmin' with Authority: 'ROLE_SYSTEM_ADMIN'
+2026-08-31T16:05:24.864+08:00  INFO 18416 --- [church-backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-08-31T16:05:24.894+08:00  INFO 18416 --- [church-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-08-31T16:05:24.903+08:00  INFO 18416 --- [church-backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-31T16:05:24.908+08:00  INFO 18416 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-08-31T16:05:24.915+08:00  INFO 18416 --- [church-backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
