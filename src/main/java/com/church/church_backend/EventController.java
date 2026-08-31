@@ -2,6 +2,9 @@ package com.church.church_backend;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,30 +16,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class EventController {
 
-    private final EventRepository eventRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
-    public EventController(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
-
-    // Public open access endpoint
+    // Public Endpoint: Everyone can view events
     @GetMapping
-    public List<ChurchEvent> getAllEvents() {
-        return eventRepository.findAll();
+    public ResponseEntity<List<Event>> getAllEvents() {
+        return ResponseEntity.ok(eventRepository.findAllByOrderByEventDateAsc());
     }
 
-    // Guarded access route (Checked by SecurityConfig rules)
+    // Secured Endpoint: Admins and System Admins only
     @PostMapping
-    public ChurchEvent createEvent(@RequestBody ChurchEvent event) {
-        return eventRepository.save(event);
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'ROLE_SYSTEM_ADMIN', 'SYSTEM_ADMIN')")
+    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+        Event savedEvent = eventRepository.save(event);
+        return ResponseEntity.status(201).body(savedEvent);
     }
 
+    // Secured Endpoint: Delete event
     @DeleteMapping("/{id}")
-    public String deleteEvent(@PathVariable Long id) {
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'ROLE_SYSTEM_ADMIN', 'SYSTEM_ADMIN')")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        if (!eventRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         eventRepository.deleteById(id);
-        return "Event deleted successfully!";
+        return ResponseEntity.noContent().build();
     }
 }
