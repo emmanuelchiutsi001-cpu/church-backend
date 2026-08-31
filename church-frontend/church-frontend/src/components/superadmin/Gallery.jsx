@@ -18,7 +18,39 @@ const GALLERY_ENDPOINTS = {
   GET_ALL: API_URL,
   UPLOAD: `${API_URL}/upload`,
   DELETE: (id) => `${API_URL}/${id}`,
-  FILE: (fileName) => `${API_URL}/files/${encodeURIComponent(fileName)}`,
+  FILE: (fileName) =>
+    `${API_URL}/files/${encodeURIComponent(fileName)}`,
+};
+
+// =========================================================
+// AUTH TOKEN
+// =========================================================
+
+const getToken = () => {
+  return (
+    localStorage.getItem("admin_token") ||
+    localStorage.getItem("user_token") ||
+    localStorage.getItem("token")
+  );
+};
+
+// =========================================================
+// AXIOS AUTH CONFIG
+// =========================================================
+
+const getAuthConfig = () => {
+  const token = getToken();
+
+  if (!token) {
+    console.warn("No authentication token found.");
+    return {};
+  }
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
 };
 
 function Gallery() {
@@ -39,37 +71,34 @@ function Gallery() {
   const [loadingGallery, setLoadingGallery] = useState(false);
 
   // =========================================================
-  // GET ALL GALLERY ITEMS
+  // LOAD GALLERY
   // GET /api/gallery
   // =========================================================
 
   const loadGallery = async () => {
     try {
       setLoadingGallery(true);
-      setError("");
 
       const response = await axios.get(
         GALLERY_ENDPOINTS.GET_ALL
       );
 
-      console.log("Gallery API response:", response.data);
+      console.log("Gallery response:", response.data);
 
-      setGalleryList(
-        Array.isArray(response.data)
-          ? response.data
-          : []
-      );
+      if (Array.isArray(response.data)) {
+        setGalleryList(response.data);
+      } else {
+        setGalleryList([]);
+      }
+
     } catch (err) {
       console.error("Error loading gallery:", err);
 
-      if (err.response) {
-        console.error(
-          "Backend response:",
-          err.response.data
-        );
-      }
+      setError(
+        err.response?.data?.message ||
+        "Failed to load gallery."
+      );
 
-      setError("Failed to load gallery.");
     } finally {
       setLoadingGallery(false);
     }
@@ -84,46 +113,62 @@ function Gallery() {
   }, []);
 
   // =========================================================
-  // HANDLE TITLE
+  // TITLE CHANGE
   // =========================================================
 
   const handleChange = (e) => {
-    setGallery({
-      ...gallery,
+    setGallery((previous) => ({
+      ...previous,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   // =========================================================
-  // HANDLE IMAGE FILE
+  // IMAGE CHANGE
   // =========================================================
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
 
     if (!file) {
+      setImageFile(null);
+      setImagePreview("");
       return;
     }
 
+    // Check image type
     if (!file.type.startsWith("image/")) {
-      setError("Please select a valid image file.");
+      setError(
+        "Please select a valid image file."
+      );
+
+      e.target.value = "";
       setImageFile(null);
       setImagePreview("");
+
       return;
     }
 
+    // Maximum 5MB
     if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be smaller than 5MB.");
+      setError(
+        "Image must be smaller than 5MB."
+      );
+
+      e.target.value = "";
       setImageFile(null);
       setImagePreview("");
+
       return;
     }
 
     setError("");
     setImageFile(file);
 
-    const preview = URL.createObjectURL(file);
-    setImagePreview(preview);
+    const previewUrl =
+      URL.createObjectURL(file);
+
+    setImagePreview(previewUrl);
   };
 
   // =========================================================
@@ -134,10 +179,11 @@ function Gallery() {
     setGallery(emptyForm);
     setImageFile(null);
     setImagePreview("");
-    setError("");
 
     const fileInput =
-      document.getElementById("gallery-image");
+      document.getElementById(
+        "gallery-image"
+      );
 
     if (fileInput) {
       fileInput.value = "";
@@ -155,15 +201,26 @@ function Gallery() {
     setMessage("");
     setError("");
 
-    // Validate title
     if (!gallery.title.trim()) {
-      setError("Please enter an image title.");
+      setError(
+        "Please enter an image title."
+      );
       return;
     }
 
-    // Validate image
     if (!imageFile) {
-      setError("Please select an image.");
+      setError(
+        "Please select an image."
+      );
+      return;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+      setError(
+        "You are not logged in. Please log in again."
+      );
       return;
     }
 
@@ -172,33 +229,55 @@ function Gallery() {
 
       const formData = new FormData();
 
-      // IMPORTANT:
-      // Backend expects @RequestParam("title")
+      // MUST MATCH BACKEND
+      // @RequestParam("title")
       formData.append(
         "title",
         gallery.title.trim()
       );
 
-      // IMPORTANT:
-      // Backend expects @RequestParam("file")
+      // MUST MATCH BACKEND
+      // @RequestParam("file")
       formData.append(
         "file",
         imageFile
       );
 
-      console.log("Uploading gallery image...");
-      console.log("Title:", gallery.title);
-      console.log("File:", imageFile.name);
-      console.log("Size:", imageFile.size);
-      console.log("Type:", imageFile.type);
-
-      const response = await axios.post(
-        GALLERY_ENDPOINTS.UPLOAD,
-        formData
+      console.log(
+        "Uploading gallery image..."
       );
 
       console.log(
-        "Upload successful:",
+        "Token exists:",
+        !!token
+      );
+
+      console.log(
+        "File:",
+        imageFile.name
+      );
+
+      console.log(
+        "File size:",
+        imageFile.size
+      );
+
+      console.log(
+        "File type:",
+        imageFile.type
+      );
+
+      // IMPORTANT:
+      // Do NOT manually set Content-Type.
+      // Axios sets the multipart boundary.
+      const response = await axios.post(
+        GALLERY_ENDPOINTS.UPLOAD,
+        formData,
+        getAuthConfig()
+      );
+
+      console.log(
+        "Upload response:",
         response.data
       );
 
@@ -223,44 +302,40 @@ function Gallery() {
         );
 
         console.error(
-          "Backend response:",
+          "Response:",
           err.response.data
-        );
-      } else if (err.request) {
-        console.error(
-          "No response received from backend:",
-          err.request
-        );
-      } else {
-        console.error(
-          "Request error:",
-          err.message
         );
       }
 
-      if (
-        err.code === "ERR_NETWORK"
+      if (err.response?.status === 401) {
+        setError(
+          "Your login session has expired. Please log in again."
+        );
+      } else if (
+        err.response?.status === 403
       ) {
-        setError(
-          "Could not connect to the gallery server. Make sure Spring Boot is running on port 8080."
-        );
-      } else if (err.response?.status === 400) {
-        setError(
-          typeof err.response.data === "string"
-            ? err.response.data
-            : "Invalid gallery upload request."
-        );
-      } else if (err.response?.status === 401) {
-        setError(
-          "You are not authorized to upload gallery images."
-        );
-      } else if (err.response?.status === 403) {
         setError(
           "You do not have permission to upload gallery images."
         );
-      } else if (err.response?.status === 413) {
+      } else if (
+        err.response?.status === 400
+      ) {
+        setError(
+          typeof err.response.data === "string"
+            ? err.response.data
+            : "Invalid upload request."
+        );
+      } else if (
+        err.response?.status === 413
+      ) {
         setError(
           "The image is too large."
+        );
+      } else if (
+        err.code === "ERR_NETWORK"
+      ) {
+        setError(
+          "Cannot connect to the Spring Boot server."
         );
       } else {
         setError(
@@ -275,34 +350,28 @@ function Gallery() {
   };
 
   // =========================================================
-  // GET IMAGE URL
+  // IMAGE URL
   // =========================================================
 
   const getImageUrl = (item) => {
-    // If backend returns a complete image URL
+    if (!item) {
+      return "";
+    }
+
+    // Backend may return image URL
     if (
-      item?.image &&
+      item.image &&
       (
         item.image.startsWith("http://") ||
-        item.image.startsWith("https://") ||
-        item.image.startsWith("blob:")
+        item.image.startsWith("https://")
       )
     ) {
       return item.image;
     }
 
+    // Backend may return URL
     if (
-      item?.fileUrl &&
-      (
-        item.fileUrl.startsWith("http://") ||
-        item.fileUrl.startsWith("https://")
-      )
-    ) {
-      return item.fileUrl;
-    }
-
-    if (
-      item?.url &&
+      item.url &&
       (
         item.url.startsWith("http://") ||
         item.url.startsWith("https://")
@@ -311,17 +380,29 @@ function Gallery() {
       return item.url;
     }
 
-    // If backend returns fileName
-    if (item?.fileName) {
+    // Backend may return file URL
+    if (
+      item.fileUrl &&
+      (
+        item.fileUrl.startsWith("http://") ||
+        item.fileUrl.startsWith("https://")
+      )
+    ) {
+      return item.fileUrl;
+    }
+
+    // Backend returns filename
+    if (item.fileName) {
       return GALLERY_ENDPOINTS.FILE(
         item.fileName
       );
     }
 
-    // If backend returns image as a filename
+    // If image is just a filename
     if (
-      item?.image &&
-      !item.image.startsWith("http")
+      item.image &&
+      !item.image.startsWith("http://") &&
+      !item.image.startsWith("https://")
     ) {
       return GALLERY_ENDPOINTS.FILE(
         item.image
@@ -332,25 +413,36 @@ function Gallery() {
   };
 
   // =========================================================
-  // DELETE IMAGE
+  // DELETE
   // DELETE /api/gallery/{id}
   // =========================================================
 
   const deleteGallery = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this image?"
-    );
+    const confirmed =
+      window.confirm(
+        "Are you sure you want to delete this image?"
+      );
 
     if (!confirmed) {
       return;
     }
 
-    try {
-      setError("");
-      setMessage("");
+    setError("");
+    setMessage("");
 
+    const token = getToken();
+
+    if (!token) {
+      setError(
+        "You are not logged in. Please log in again."
+      );
+      return;
+    }
+
+    try {
       await axios.delete(
-        GALLERY_ENDPOINTS.DELETE(id)
+        GALLERY_ENDPOINTS.DELETE(id),
+        getAuthConfig()
       );
 
       setMessage(
@@ -365,23 +457,19 @@ function Gallery() {
         err
       );
 
-      if (err.response) {
-        console.error(
-          "Backend response:",
-          err.response.data
-        );
-      }
-
       if (err.response?.status === 401) {
         setError(
-          "You are not authorized to delete this image."
+          "Your login session has expired."
         );
-      } else if (err.response?.status === 403) {
+      } else if (
+        err.response?.status === 403
+      ) {
         setError(
-          "You do not have permission to delete this image."
+          "You do not have permission to delete gallery images."
         );
       } else {
         setError(
+          err.response?.data?.message ||
           "Failed to delete gallery image."
         );
       }
@@ -403,31 +491,35 @@ function Gallery() {
 
       <Card.Body>
 
-        {/* SUCCESS MESSAGE */}
+        {/* SUCCESS */}
 
         {message && (
           <Alert
             variant="success"
             dismissible
-            onClose={() => setMessage("")}
+            onClose={() =>
+              setMessage("")
+            }
           >
             {message}
           </Alert>
         )}
 
-        {/* ERROR MESSAGE */}
+        {/* ERROR */}
 
         {error && (
           <Alert
             variant="danger"
             dismissible
-            onClose={() => setError("")}
+            onClose={() =>
+              setError("")
+            }
           >
             {error}
           </Alert>
         )}
 
-        {/* UPLOAD FORM */}
+        {/* FORM */}
 
         <Form onSubmit={saveGallery}>
 
@@ -436,6 +528,7 @@ function Gallery() {
             {/* TITLE */}
 
             <Col md={12}>
+
               <Form.Group className="mb-3">
 
                 <Form.Label>
@@ -453,11 +546,13 @@ function Gallery() {
                 />
 
               </Form.Group>
+
             </Col>
 
             {/* IMAGE */}
 
             <Col md={12}>
+
               <Form.Group className="mb-3">
 
                 <Form.Label>
@@ -473,16 +568,21 @@ function Gallery() {
                 />
 
                 <Form.Text className="text-muted">
-                  JPG, JPEG, PNG or WEBP. Maximum 5MB.
+                  JPG, JPEG, PNG or WEBP.
+                  Maximum 5MB.
                 </Form.Text>
 
               </Form.Group>
+
             </Col>
 
             {/* PREVIEW */}
 
             {imagePreview && (
-              <Col md={12} className="mb-4">
+              <Col
+                md={12}
+                className="mb-4"
+              >
 
                 <strong>
                   Image Preview
@@ -508,7 +608,7 @@ function Gallery() {
 
           </Row>
 
-          {/* UPLOAD BUTTON */}
+          {/* BUTTONS */}
 
           <Button
             type="submit"
@@ -531,8 +631,6 @@ function Gallery() {
 
           </Button>
 
-          {/* CLEAR */}
-
           <Button
             type="button"
             variant="secondary"
@@ -547,7 +645,7 @@ function Gallery() {
 
         <hr className="my-4" />
 
-        {/* GALLERY TABLE */}
+        {/* GALLERY */}
 
         <h4 className="mb-3">
           Gallery Images
@@ -589,7 +687,7 @@ function Gallery() {
                   File
                 </th>
 
-                <th width="120">
+                <th>
                   Actions
                 </th>
 
@@ -620,7 +718,9 @@ function Gallery() {
                     getImageUrl(item);
 
                   return (
-                    <tr key={item.id}>
+                    <tr
+                      key={item.id}
+                    >
 
                       <td>
 
@@ -637,10 +737,6 @@ function Gallery() {
                             rounded
                             style={{
                               objectFit: "cover",
-                            }}
-                            onError={(e) => {
-                              e.currentTarget.style.display =
-                                "none";
                             }}
                           />
 

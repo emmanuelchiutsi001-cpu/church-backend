@@ -18,7 +18,7 @@ We have successfully engineered and verified the entire backend core:
 
 ## 🔑 Default Master Credentials (Local Development)
 When the application boots up, a Master System Admin account is automatically seeded into the database if it doesn't already exist:
-* **Username:** `mj_sysadmin`
+* **Username:** `mjsysadmin`
 * **Password:** `MasterSecret2026!`
 
 *Note: In production environments, override these defaults by setting the `SYS_ADMIN_USER` and `SYS_ADMIN_PASSWORD` system environment variables.*
