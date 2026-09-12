@@ -1,107 +1,170 @@
-import { useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { FaUser, FaUsers, FaEnvelope, FaPhone} from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { FaUser, FaUsers, FaChurch, FaVideo, FaFileAlt } from "react-icons/fa";
+
+const API_BASE = "http://localhost:8080";
+const API_URL = `${API_BASE}/api/leaders`;
+
+const absoluteUrl = (url) =>
+  !url ? "" : url.startsWith("http") ? url : `${API_BASE}${url}`;
+
+// Sort newest first — by createdAt, falling back to id
+const sortNewestFirst = (list) =>
+  [...list].sort((a, b) => {
+    const aDate = a.createdAt ? new Date(a.createdAt).getTime() : a.id || 0;
+    const bDate = b.createdAt ? new Date(b.createdAt).getTime() : b.id || 0;
+    return bDate - aDate;
+  });
 
 const Leadership = () => {
+  const [leaders, setLeaders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    const load = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(API_URL);
+        setLeaders(sortNewestFirst(Array.isArray(data) ? data : []));
+      } catch (err) {
+        setError(err.response?.data?.message || err.message || "Failed to load leaders.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, []);
 
-  const leadership = [
-    {
-      name: 'Most Rev. Robert Ndlovu',
-      title: 'Archbishop of Harare',
-      bio: 'Appointed Archbishop in 2004, leading the Archdiocese with wisdom and pastoral care.',
-      email: 'archbishop@hararearchdiocese.org',
-      phone: '+263 4 123456',
-    },
-    {
-      name: 'Rev. Fr. John Makoni',
-      title: 'Vicar General',
-      bio: 'Oversees the day-to-day administration of the Archdiocese and supports the Archbishop.',
-      email: 'vicar@hararearchdiocese.org',
-      phone: '+263 4 123457',
-    },
-    {
-      name: 'Rev. Fr. Peter Chigora',
-      title: 'Chancellor',
-      bio: 'Manages the legal and administrative affairs of the Archdiocese.',
-      email: 'chancellor@hararearchdiocese.org',
-      phone: '+263 4 123458',
-    },
-    {
-      name: 'Rev. Fr. Michael Banda',
-      title: 'Episcopal Vicar for Education',
-      bio: 'Leads the education ministry, overseeing schools and catechetical programs.',
-      email: 'education@hararearchdiocese.org',
-      phone: '+263 4 123459',
-    },
-    {
-      name: 'Rev. Fr. Thomas Moyo',
-      title: 'Episcopal Vicar for Social Services',
-      bio: 'Coordinates the Archdiocese\'s social outreach and charitable works.',
-      email: 'social@hararearchdiocese.org',
-      phone: '+263 4 123460',
-    },
-    {
-      name: 'Rev. Fr. David Nyathi',
-      title: 'Vicar for Clergy',
-      bio: 'Supports the spiritual and professional development of priests in the Archdiocese.',
-      email: 'clergy@hararearchdiocese.org',
-      phone: '+263 4 123461',
-    },
-  ];
+  const photoOf = (item) => {
+    if (!item) return "";
+    if (item.photoUrl) return absoluteUrl(item.photoUrl);
+    if (item.photoFileName) return `${API_URL}/photos/${item.photoFileName}`;
+    return "";
+  };
 
   return (
     <div>
       {/* HERO */}
-      <section className="bg-primary text-white py-5" style={{ background: 'linear-gradient(135deg, #0D47A1, #1a237e)' }}>
-        <Container className="py-4">
-          <Row>
-            <Col lg={8}>
-              <Badge bg="warning" text="dark" className="mb-3">Leadership</Badge>
-              <h1 className="display-4 fw-bold">Our Shepherds</h1>
-              <p className="lead text-white-50">
-                Meet the dedicated clergy guiding the Archdiocese of Harare with faith, wisdom, and service.
-              </p>
-            </Col>
-          </Row>
+      <section style={{ background: 'linear-gradient(135deg, #0D47A1, #1a237e)', padding: '2.5rem 0' }}>
+        <Container>
+          <Badge bg="warning" text="dark" className="mb-2 px-3 py-1"
+                 style={{ letterSpacing: '0.5px', fontSize: '0.75rem' }}>
+            LEADERSHIP
+          </Badge>
+          <h1 className="text-white fw-bold mb-2" style={{ fontSize: '2.25rem' }}>Our Shepherds</h1>
+          <p className="text-white-50 mb-0" style={{ fontSize: '0.95rem' }}>
+            Meet the clergy guiding the Archdiocese of Harare with faith, wisdom, and service.
+          </p>
         </Container>
       </section>
 
-      {/* LEADERSHIP CARDS */}
+      {/* LEADERS GRID */}
       <section className="py-5">
         <Container>
           <Row className="text-center mb-4">
             <Col>
-              <h2 className="display-6 fw-bold">Archdiocesan Leadership</h2>
-              <p className="text-muted">Servant leaders committed to the Gospel and the people of Zimbabwe.</p>
+              <h2 className="fw-bold" style={{ color: "#0D47A1" }}>Archdiocesan Leadership</h2>
+              <p className="text-muted mb-0">
+                Servant leaders committed to the Gospel and the people of Zimbabwe.
+              </p>
             </Col>
           </Row>
-          <Row>
-            {leadership.map((leader, idx) => (
-              <Col key={idx} lg={4} md={6} className="mb-4">
-                <Card className="h-100 shadow-sm">
-                  <Card.Body className="text-center">
-                    <div className="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" style={{ width: '100px', height: '100px' }}>
-                      <FaUser size={50} className="text-secondary" />
-                    </div>
-                    <Card.Title className="fw-bold mt-3">{leader.name}</Card.Title>
-                    <Badge bg="warning" text="dark" className="mb-2">{leader.title}</Badge>
-                    <Card.Text className="text-muted small">{leader.bio}</Card.Text>
-                    <div className="d-flex justify-content-center gap-3 mt-2">
-                      <FaEnvelope className="text-warning" title={leader.email} />
-                      <FaPhone className="text-warning" title={leader.phone} />
-                    </div>
-                    <div className="mt-3">
-                      <Button variant="outline-warning" size="sm">View Profile</Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+
+          {loading && (
+            <div className="text-center py-5">
+              <Spinner animation="border" style={{ color: "#0D47A1" }} />
+              <p className="mt-3 text-muted">Loading leaders…</p>
+            </div>
+          )}
+
+          {!loading && error && (
+            <Alert variant="danger" className="text-center">{error}</Alert>
+          )}
+
+          {!loading && !error && leaders.length === 0 && (
+            <div className="text-center py-5">
+              <FaUser size={56} className="text-secondary mb-3" />
+              <h5 className="text-muted">No leaders to display yet</h5>
+            </div>
+          )}
+
+          {!loading && !error && leaders.length > 0 && (
+            <Row>
+              {leaders.map((leader) => {
+                const src = photoOf(leader);
+                return (
+                  <Col key={leader.id} lg={4} md={6} className="mb-4">
+                    <Card className="h-100 border-0 shadow-sm"
+                          style={{ borderRadius: 16, overflow: "hidden" }}>
+                      <div style={{
+                        height: 260,
+                        background: "linear-gradient(135deg, #e3e8f5 0%, #c9d3ec 100%)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        position: "relative",
+                      }}>
+                        {/* Photo (hidden if no src or load fails) */}
+                        {src && (
+                          <img
+                            src={src}
+                            alt={leader.name}
+                            style={{
+                              width: "100%", height: "100%", objectFit: "cover",
+                              position: "absolute", inset: 0,
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                              const fallback = e.currentTarget.nextSibling;
+                              if (fallback) fallback.style.display = "block";
+                            }}
+                          />
+                        )}
+                        {/* Fallback icon */}
+                        <FaUser
+                          size={72}
+                          style={{
+                            color: "#7a8cbd",
+                            display: src ? "none" : "block",
+                          }}
+                        />
+                      </div>
+                      <Card.Body className="text-center">
+                        <Card.Title className="fw-bold mb-1">{leader.name}</Card.Title>
+                        {leader.role && (
+                          <Badge bg="warning" text="dark" className="mb-2">{leader.role}</Badge>
+                        )}
+                        {leader.deanery && (
+                          <div className="text-muted small mb-2">
+                            <FaChurch style={{ color: "#0D47A1", marginRight: 4 }} /> {leader.deanery}
+                          </div>
+                        )}
+                        {leader.bio && (
+                          <Card.Text className="text-muted small">{leader.bio}</Card.Text>
+                        )}
+                        {leader.sermonTitle && (
+                          <div className="text-primary small fw-semibold mt-2">
+                            <FaFileAlt style={{ marginRight: 4 }} /> {leader.sermonTitle}
+                          </div>
+                        )}
+                        {leader.videoUrl && (
+                          <div className="mt-2">
+                            <a href={absoluteUrl(leader.videoUrl)} target="_blank" rel="noopener noreferrer"
+                               className="text-decoration-none small fw-semibold"
+                               style={{ color: "#0D47A1" }}>
+                              <FaVideo style={{ marginRight: 4 }} /> Watch Sermon
+                            </a>
+                          </div>
+                        )}
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                );
+              })}
+            </Row>
+          )}
         </Container>
       </section>
 
@@ -111,7 +174,7 @@ const Leadership = () => {
           <Row className="align-items-center">
             <Col lg={7}>
               <Badge bg="warning" text="dark" className="mb-3">Call to Serve</Badge>
-              <h2 className="display-6 fw-bold">Discern Your Vocation</h2>
+              <h2 className="fw-bold">Discern Your Vocation</h2>
               <p className="text-muted fs-5">
                 Are you being called to serve God as a priest, religious, or lay leader?
                 The Archdiocese of Harare welcomes those who feel called to serve the Church.
@@ -122,7 +185,8 @@ const Leadership = () => {
               </div>
             </Col>
             <Col lg={5} className="text-center mt-4 mt-lg-0">
-              <div className="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto" style={{ width: '200px', height: '200px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+              <div className="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                   style={{ width: 200, height: 200, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                 <FaUsers size={80} className="text-warning" />
               </div>
             </Col>
@@ -131,12 +195,14 @@ const Leadership = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-5 bg-primary text-white">
+      <section className="py-5" style={{ background: "linear-gradient(135deg, #0D47A1, #1a237e)" }}>
         <Container>
-          <Row className="justify-content-center text-center">
+          <Row className="justify-content-center text-center text-white">
             <Col lg={8}>
-              <h2 className="display-6 fw-bold">Pray for Our Shepherds</h2>
-              <p className="text-white-50">Support our leadership with your prayers as they guide the Archdiocese.</p>
+              <h2 className="fw-bold">Pray for Our Shepherds</h2>
+              <p className="text-white-50">
+                Support our leadership with your prayers as they guide the Archdiocese.
+              </p>
               <div className="mt-4">
                 <Button variant="warning" size="lg" className="me-3 fw-bold">Submit Prayer Request</Button>
                 <Button variant="outline-light" size="lg" as={Link} to="/contact">Contact Leadership</Button>
