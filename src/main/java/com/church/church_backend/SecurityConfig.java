@@ -39,65 +39,95 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 🌟 1. Enable CORS using our custom configuration bean below
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-            // 2. Disable CSRF since JWTs are stateless tokens
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                // Explicitly allow preflight OPTIONS requests for all endpoints
+
+                // ─── Preflight ───────────────────────────────────────
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Completely public read-only paths
+                // ─── Public reads (no auth needed) ───────────────────
                 .requestMatchers(HttpMethod.GET, "/api/members", "/api/events").permitAll()
-
-                // 📸 GALLERY ACCESS: Public/Members can fetch image list and render files
                 .requestMatchers(HttpMethod.GET, "/api/gallery", "/api/gallery/files/**").permitAll()
 
-                // Open login & registration options
+                // 📰 News — public reads (list, documents, images)
+                .requestMatchers(HttpMethod.GET,
+                        "/api/news",
+                        "/api/news/files/**",
+                        "/api/news/images/**")
+                    .permitAll()
+
+                // 👥 Leaders — public reads (list, photos, videos)   ← NEW
+                .requestMatchers(HttpMethod.GET,
+                        "/api/leaders",
+                        "/api/leaders/photos/**",
+                        "/api/leaders/videos/**")
+                    .permitAll()
+
+                // ─── Auth (login / register) ─────────────────────────
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
 
-                // Custom Header/Role checking logic for files
-                .requestMatchers("/api/files/**").permitAll() 
+                // ─── Files ───────────────────────────────────────────
+                .requestMatchers("/api/files/**").permitAll()
 
-                // Only System Admins can pull pending lists or hit approval switches
-                .requestMatchers("/api/auth/pending", "/api/auth/approve/**").hasAuthority("ROLE_SYSTEM_ADMIN")
+                // ─── System Admin only ───────────────────────────────
+                .requestMatchers("/api/auth/pending", "/api/auth/approve/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
 
-                // Modifying church records or submitting attendance requires valid admin signatures
-                .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/events/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
-                .requestMatchers("/api/attendance/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                // ─── Admin writes: Members / Events / Attendance ─────
+                .requestMatchers(HttpMethod.POST, "/api/members/**", "/api/events/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/events/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers("/api/attendance/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
 
-                // 📸 GALLERY MANAGEMENT: Explicitly check full string authorities to prevent double-prefix issues
-                .requestMatchers(HttpMethod.POST, "/api/gallery/upload").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                // ─── Gallery writes ──────────────────────────────────
+                .requestMatchers(HttpMethod.POST, "/api/gallery/upload")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
 
-                // Every other request inside the app requires general authentication
+                // ─── News writes ─────────────────────────────────────
+                .requestMatchers(HttpMethod.POST, "/api/news", "/api/news/upload")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/news/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+
+                // ─── Leaders writes                                ← NEW
+                .requestMatchers(HttpMethod.POST, "/api/leaders", "/api/leaders/upload")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/leaders/**")
+                    .hasAnyAuthority("ROLE_ADMIN", "ROLE_SYSTEM_ADMIN")
+
+                // ─── Everything else ─────────────────────────────────
                 .anyRequest().authenticated()
             );
 
-        // Intercept all incoming traffic with our JWT guard before Spring's basic login filters run
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Configures global CORS rules for Spring Security
+    // ─── CORS ────────────────────────────────────────────────
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow requests from your React frontend origin (Vite default port 5173)
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:3000",
+            "http://localhost:4173"
+        ));
 
-        // Allow standard HTTP methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
 
-        // Allow headers sent by Axios (including Authorization header)
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        configuration.setAllowedHeaders(List.of(
+            "Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"
+        ));
 
-        // Allow credentials (e.g., cookies or auth headers)
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

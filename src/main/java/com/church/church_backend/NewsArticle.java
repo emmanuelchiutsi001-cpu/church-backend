@@ -18,17 +18,22 @@ public class NewsArticle {
 
     private String author;
 
+    // ── Existing: PDF/DOC attachment ────────────────
     private String documentName;
-
     private String documentUrl;
+    private String fileType;
 
-    private String fileType; // PDF, DOC, DOCX, etc.
+    // 🆕 Hero image for the news card
+    private String imageName;
+    private String imageUrl;
 
     private LocalDateTime publishedAt;
 
     public NewsArticle() {}
 
-    public NewsArticle(String title, String content, String author, String documentName, String documentUrl, String fileType) {
+    // Existing constructor (used for document uploads)
+    public NewsArticle(String title, String content, String author,
+                       String documentName, String documentUrl, String fileType) {
         this.title = title;
         this.content = content;
         this.author = author;
@@ -42,7 +47,7 @@ public class NewsArticle {
         this.publishedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
+    // ── Getters & setters ───────────────────────────
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -63,6 +68,12 @@ public class NewsArticle {
 
     public String getFileType() { return fileType; }
     public void setFileType(String fileType) { this.fileType = fileType; }
+
+    public String getImageName() { return imageName; }
+    public void setImageName(String imageName) { this.imageName = imageName; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public LocalDateTime getPublishedAt() { return publishedAt; }
     public void setPublishedAt(LocalDateTime publishedAt) { this.publishedAt = publishedAt; }

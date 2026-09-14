@@ -10,15 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -32,73 +24,87 @@ public class NewsController {
         this.newsService = newsService;
     }
 
-    // Public / Members: Get all news (latest first)
+    // ── Public reads ───────────────────────────────
     @GetMapping
     public ResponseEntity<List<NewsArticle>> getAllNews() {
         return ResponseEntity.ok(newsService.getAllNews());
     }
 
-    // Public / Members: Get news by ID
     @GetMapping("/{id}")
     public ResponseEntity<NewsArticle> getNewsById(@PathVariable Long id) {
         return ResponseEntity.ok(newsService.getNewsById(id));
     }
 
-    // Public / Members: Download/view attached PDF or Word document
+    // Serve PDF/DOC attachments
     @GetMapping("/files/{fileName:.+}")
     public ResponseEntity<Resource> getDocumentFile(@PathVariable String fileName) {
-        try {
-            Path filePath = newsService.getFilePath(fileName);
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() || resource.isReadable()) {
-                MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-                if (fileName.endsWith(".pdf")) {
-                    mediaType = MediaType.APPLICATION_PDF;
-                }
-
-                return ResponseEntity.ok()
-                        .contentType(mediaType)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return serveFile(newsService.getDocumentPath(fileName), fileName);
     }
 
-    // Admin & System Admin: Create text-only news article (JSON)
+    // 🆕 Serve hero images
+    @GetMapping("/images/{fileName:.+}")
+    public ResponseEntity<Resource> getImageFile(@PathVariable String fileName) {
+        return serveFile(newsService.getImagePath(fileName), fileName);
+    }
+
+    // ── Admin writes ───────────────────────────────
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'ROLE_SYSTEM_ADMIN', 'SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<NewsArticle> createTextArticle(@RequestBody NewsArticle article) {
-        NewsArticle created = newsService.createTextArticle(article);
-        return ResponseEntity.status(201).body(created);
+        return ResponseEntity.status(201).body(newsService.createTextArticle(article));
     }
 
-    // Admin & System Admin: Upload news article with PDF or Word document attachment
+    /**
+     * Unified upload endpoint.
+     * - Send `image` only → text article with hero image
+     * - Send `file` only  → text article with document
+     * - Send both         → article with image + document
+     */
     @PostMapping("/upload")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'ROLE_SYSTEM_ADMIN', 'SYSTEM_ADMIN')")
-    public ResponseEntity<?> createDocumentArticle(
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_SYSTEM_ADMIN')")
+    public ResponseEntity<?> upload(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam(value = "author", required = false, defaultValue = "Church Admin") String author,
-            @RequestParam("file") MultipartFile file) {
-        
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "file",  required = false) MultipartFile file) {
         try {
-            NewsArticle saved = newsService.createDocumentArticle(title, content, author, file);
+            NewsArticle saved = newsService.createWithImages(title, content, author, image, file);
             return ResponseEntity.status(201).body(saved);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Admin & System Admin: Delete news article
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'ROLE_SYSTEM_ADMIN', 'SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<?> deleteNews(@PathVariable Long id) {
         newsService.deleteNews(id);
         return ResponseEntity.ok("News article deleted successfully.");
+    }
+
+    // ── File serving helper ────────────────────────
+    private ResponseEntity<Resource> serveFile(Path path, String fileName) {
+        try {
+            Resource resource = new UrlResource(path.toUri());
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            String lower = fileName.toLowerCase();
+            if (lower.endsWith(".pdf"))       mediaType = MediaType.APPLICATION_PDF;
+            else if (lower.endsWith(".png"))  mediaType = MediaType.IMAGE_PNG;
+            else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) mediaType = MediaType.IMAGE_JPEG;
+            else if (lower.endsWith(".webp")) mediaType = MediaType.parseMediaType("image/webp");
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
