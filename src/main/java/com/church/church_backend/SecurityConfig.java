@@ -68,6 +68,10 @@ public class SecurityConfig {
                 // ─── Auth (login / register) ─────────────────────────
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
 
+                // ─── System-admin account management ─────────────────
+                .requestMatchers("/api/system-admin/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+
                 // ─── Files ───────────────────────────────────────────
                 .requestMatchers("/api/files/**").permitAll()
 

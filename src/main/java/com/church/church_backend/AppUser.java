@@ -27,6 +27,11 @@ public class AppUser {
     @Column(nullable = false)
     private boolean approved = false; // System Admin must flip this to true
 
+    // Nullable for compatibility with existing SQLite databases created before this field existed.
+    // Missing legacy values are treated as not suspended by isSuspended().
+    @Column
+    private Boolean suspended = false;
+
     // Constructors
     public AppUser() {}
 
@@ -52,4 +57,7 @@ public class AppUser {
 
     public boolean isApproved() { return approved; }
     public void setApproved(boolean approved) { this.approved = approved; }
+
+    public boolean isSuspended() { return Boolean.TRUE.equals(suspended); }
+    public void setSuspended(boolean suspended) { this.suspended = suspended; }
 }

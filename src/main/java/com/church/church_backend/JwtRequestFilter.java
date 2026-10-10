@@ -19,60 +19,65 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public JwtRequestFilter(JwtUtil jwtUtil) {
+    public JwtRequestFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. Intercept the incoming Authorization header
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
         String jwt = null;
-        String role = null;
+        String tokenRole = null;
 
-        // 2. Safely extract the token string if the header standard is met
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
-                role = jwtUtil.extractRole(jwt);
+                tokenRole = jwtUtil.extractRole(jwt);
             } catch (Exception e) {
-                logger.error("❌ JWT validation or parsing failed: " + e.getMessage());
+                logger.error("JWT validation or parsing failed: " + e.getMessage());
             }
         }
 
-        // 3. Authenticate the request thread if token is valid and session isn't established yet
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            
             if (jwtUtil.validateToken(jwt, username)) {
-                
-                // Fallback and log check if role claim is missing from payload
-                if (role == null || role.trim().isEmpty()) {
-                    logger.warn("⚠️ JWT for user '" + username + "' contains NO role claim.");
-                    role = "ROLE_USER"; 
-                } else {
-                    logger.info("🔑 Authenticated user '" + username + "' with Authority: '" + role + "'");
-                }
+                // Always check current database state: suspended/unapproved accounts cannot
+                // continue using an already-issued JWT.
+                AppUser currentUser = userRepository.findByUsername(username).orElse(null);
 
-                // Convert the role string into a Spring GrantedAuthority object
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
-                
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        username, null, Collections.singletonList(authority));
-                
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // 4. Pass the authenticated user credentials into Spring's Security context
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                if (currentUser != null
+                        && currentUser.isApproved()
+                        && !currentUser.isSuspended()
+                        && tokenRole != null
+                        && tokenRole.equals(currentUser.getRole())) {
+
+                    SimpleGrantedAuthority authority =
+                            new SimpleGrantedAuthority(currentUser.getRole());
+
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    currentUser.getUsername(), null,
+                                    Collections.singletonList(authority));
+
+                    authenticationToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    logger.info("Authenticated user '" + username + "' with current database authority.");
+                } else {
+                    logger.warn("Rejected JWT for missing, unapproved, suspended, or role-mismatched account: "
+                            + username);
+                }
             }
         }
 
-        // 5. Hand the request down the chain to the controller
         filterChain.doFilter(request, response);
     }
 }

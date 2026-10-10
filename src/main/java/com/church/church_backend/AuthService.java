@@ -38,12 +38,17 @@ public class AuthService {
             throw new RuntimeException("Invalid username or password!");
         }
 
-        // 2. Enforcement: Block unapproved admin login attempts
+        // Block suspended accounts before issuing a JWT.
+        if (user.isSuspended()) {
+            throw new RuntimeException("Your account has been suspended. Contact the System Admin.");
+        }
+
+        // Enforcement: Block unapproved admin login attempts.
         if (!user.isApproved()) {
             throw new RuntimeException("Your account is pending approval from the System Admin.");
         }
 
-        // 3. Generate and return the secure token embedded with their role
+        // Generate and return the secure token embedded with their role.
         return jwtUtil.generateToken(user.getUsername(), user.getRole());
     }
 
