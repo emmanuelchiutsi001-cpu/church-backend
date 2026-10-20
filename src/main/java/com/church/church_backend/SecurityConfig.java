@@ -65,11 +65,37 @@ public class SecurityConfig {
                         "/api/leaders/videos/**")
                     .permitAll()
 
+                // ─── Public deanery information reads ─────────────────
+                // Public website can display deaneries, parishes, priests, Mass times and events.
+                // All POST/PUT/DELETE operations for these resources are restricted below.
+                .requestMatchers(HttpMethod.GET, "/api/deaneries", "/api/deaneries/**",
+                        "/api/parishes", "/api/parishes/**", "/api/priests", "/api/priests/**",
+                        "/api/mass-times", "/api/mass-times/**", "/api/deanery-events", "/api/deanery-events/**")
+                    .permitAll()
+
                 // ─── Auth (login / register) ─────────────────────────
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
 
                 // ─── System-admin account management ─────────────────
                 .requestMatchers("/api/system-admin/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+
+                // ─── Deanery administration: system admin only ────────
+                // These write rules follow public GET rules, so only reads are public.
+                .requestMatchers(HttpMethod.POST, "/api/deaneries", "/api/deaneries/**",
+                        "/api/parishes", "/api/parishes/**", "/api/priests", "/api/priests/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/deaneries", "/api/deaneries/**",
+                        "/api/parishes", "/api/parishes/**", "/api/priests", "/api/priests/**",
+                        "/api/mass-times/**", "/api/deanery-events/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/deaneries", "/api/deaneries/**",
+                        "/api/parishes", "/api/parishes/**", "/api/priests", "/api/priests/**",
+                        "/api/mass-times/**", "/api/deanery-events/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/parishes/*/mass-times", "/api/deaneries/*/events", "/api/deanery-events/**", "/api/mass-times/**")
+                    .hasAuthority("ROLE_SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/deaneries/**", "/api/parishes/**", "/api/priests/**", "/api/mass-times/**", "/api/deanery-events/**")
                     .hasAuthority("ROLE_SYSTEM_ADMIN")
 
                 // ─── Files ───────────────────────────────────────────
