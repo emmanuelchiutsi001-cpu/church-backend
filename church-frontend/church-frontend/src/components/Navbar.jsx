@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 function NavigationBar() {
-  const parishData = [
+  const deaneryData = [
     {
       deanery: "Inner City Deanery",
       parishes: [
@@ -35,7 +35,7 @@ function NavigationBar() {
       parishes: [
         "St. Mary Immaculate (New Highfield)",
         "St. Paul (Glen View)",
-        "St. Patrick (Glen Norah)",
+        "St. Patrick (Glen Nora)",
         "St. John (Budiriro)",
         "Holy Cross (Budiriro)"
       ]
@@ -113,22 +113,10 @@ function NavigationBar() {
     }
   ];
 
- const navItems = [
-  { name: "Home", href: "/" },
-  { name: "About the Archdiocese", href: "/about" },
-  { name: "Leadership", href: "/leadership" },
-  { name: "Deaneries", href: "/deaneries" },
-  { name: "Ministries", href: "/ministries" },
-  { name: "News", href: "/news" },
-  { name: "Events", href: "/events" },
-  { name: "Gallery", href: "/gallery" },
-  { name: "Contact", href: "/contact" }
-];
-
   return (
     <Navbar expand="lg" className="bg-white shadow-sm py-2 sticky-top">
       <Container>
-        {/* Fixed Brand - Only ONE logo */}
+        {/* Brand Logo */}
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img 
             src={logo} 
@@ -137,53 +125,61 @@ function NavigationBar() {
             className="me-2" 
             alt="Agnes & Alois Youth Guild Logo" 
           />
-         <div>
-  <span
-    className="fw-bold text-primary d-block"
-    style={{ fontSize: "0.92rem", lineHeight: "1.2" }}
-  >
-    Archdiocese of Harare
-  </span>
-
-  <span
-    style={{
-      fontSize: "0.62rem",
-      color: "#D4AF37",
-      letterSpacing: "1.5px",
-      textTransform: "uppercase"
-    }}
-  >
-    Roman Catholic Church
-  </span>
-</div>
+          <div>
+            <span
+              className="fw-bold text-primary d-block"
+              style={{ fontSize: "0.92rem", lineHeight: "1.2" }}
+            >
+              Archdiocese of Harare
+            </span>
+            <span
+              style={{
+                fontSize: "0.62rem",
+                color: "#D4AF37",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase"
+              }}
+            >
+              Roman Catholic Church
+            </span>
+          </div>
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="navbar-nav" />
         
         <Navbar.Collapse id="navbar-nav">
-          <Nav className="ms-auto align-items-lg-center">
-            {/* Parishes Dropdown */}
-            <NavDropdown
-              title="Parishes"
-              id="parishes-dropdown"
-              style={{
-                fontSize: "0.78rem",
-                color: "#495057",
-                padding: "6px 12px",
-              }}
-              className="parishes-dropdown"
+          
+          {/* Note: We removed 'ms-auto' from the Nav so it aligns to the left, 
+              and added it to the Join Us button to push it to the right. */}
+          <Nav className="align-items-lg-center me-auto">
+            
+            {/* ================= DEANERIES DROPDOWN (FIRST ITEM) ================= */}
+            <NavDropdown 
+              title="Deaneries" 
+              id="deaneries-dropdown"
+              style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px", fontWeight: "600" }}
             >
-              {parishData.map((deanery, index) => (
-                <NavDropdown key={index} title={deanery.deanery} drop="end">
-                  {deanery.parishes.map((parish, idx) => {
+              <NavDropdown.Item as={Link} to="/deaneries" className="fw-bold text-primary">
+                View All Deaneries
+              </NavDropdown.Item>
+              <NavDropdown.Divider />
+
+              {deaneryData.map((item, index) => (
+                <NavDropdown 
+                  key={index} 
+                  title={item.deanery} 
+                  drop="end" 
+                  style={{ fontSize: "0.85rem" }}
+                >
+                  {item.parishes.map((parish, pIndex) => {
                     const slug = parish
                       .toLowerCase()
                       .replace(/[()']/g, '')
                       .replace(/\s+/g, '-');
-                    
+                      
                     return (
                       <NavDropdown.Item 
-                        key={idx} 
+                        key={pIndex} 
                         as={Link} 
                         to={`/parishes/${slug}`}
                       >
@@ -194,52 +190,48 @@ function NavigationBar() {
                 </NavDropdown>
               ))}
             </NavDropdown>
+            {/* ======================================================================= */}
 
-            {navItems.map((item, index) => (
-              <Nav.Link 
-                key={index} 
-                as={Link}
-                to={item.href} 
-                style={{ 
-                  fontSize: "0.78rem", 
-                  color: item.name === "Home" ? "#0D47A1" : "#495057",
-                  fontWeight: item.name === "Home" ? "600" : "400",
-                  padding: "6px 12px",
-                  transition: "color 0.3s ease"
-                }}
-                className={item.name === "Home" ? "fw-semibold" : ""}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "#0D47A1";
-                }}
-                onMouseLeave={(e) => {
-                  if (item.name !== "Home") {
-                    e.currentTarget.style.color = "#495057";
-                  }
-                }}
-              >
-                {item.name}
-              </Nav.Link>
-            ))}
+            {/* Home Link (NOW SECOND) */}
+            <Nav.Link 
+              as={Link} 
+              to="/" 
+              style={{ fontSize: "0.78rem", color: "#0D47A1", fontWeight: "600", padding: "6px 12px" }}
+            >
+              Home
+            </Nav.Link>
+
+            {/* About Link */}
+            <Nav.Link 
+              as={Link} 
+              to="/about" 
+              style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}
+            >
+              About the Archdiocese
+            </Nav.Link>
+
+            {/* Leadership Link */}
+            <Nav.Link 
+              as={Link} 
+              to="/leadership" 
+              style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}
+            >
+              Leadership
+            </Nav.Link>
+
+            {/* Remaining Navigation Items */}
+            <Nav.Link as={Link} to="/ministries" style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}>Ministries</Nav.Link>
+            <Nav.Link as={Link} to="/news" style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}>News</Nav.Link>
+            <Nav.Link as={Link} to="/events" style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}>Events</Nav.Link>
+            <Nav.Link as={Link} to="/gallery" style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}>Gallery</Nav.Link>
+            <Nav.Link as={Link} to="/contact" style={{ fontSize: "0.78rem", color: "#495057", padding: "6px 12px" }}>Contact</Nav.Link>
             
+            {/* Join Us Button (Added ms-auto to keep it on the far right) */}
             <Nav.Link 
               as={Link}
               to="/join"
-              className="btn btn-primary text-white px-4 py-2 ms-lg-2 mt-2 mt-lg-0" 
-              style={{ 
-                fontSize: "0.75rem", 
-                borderRadius: "50px", 
-                fontWeight: "600",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = "0 4px 15px rgba(13,71,161,0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              className="btn btn-primary text-white px-4 py-2 ms-auto mt-2 mt-lg-0" 
+              style={{ fontSize: "0.75rem", borderRadius: "50px", fontWeight: "600", letterSpacing: "0.5px" }}
             >
               Join Us
             </Nav.Link>

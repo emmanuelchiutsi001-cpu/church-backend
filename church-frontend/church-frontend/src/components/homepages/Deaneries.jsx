@@ -1,63 +1,39 @@
-import React, { useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaChurch, FaMapMarkerAlt, FaUsers, FaPhone, FaEnvelope, FaArrowRight } from 'react-icons/fa';
+import { FaChurch, FaMapMarkerAlt, FaUsers, FaArrowRight } from 'react-icons/fa';
 
 const Deaneries = () => {
+  // 1. Setup state for the API data, loading status, and errors
+  const [deaneries, setDeaneries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
 
-  const deaneries = [
-    {
-      name: 'Harare Central',
-      location: 'Harare CBD',
-      parishes: '12',
-      description: 'The heart of the Archdiocese, serving the capital city and its surrounding areas.',
-    },
-    {
-      name: 'Chitungwiza',
-      location: 'Chitungwiza',
-      parishes: '10',
-      description: 'Serving the growing communities in the Chitungwiza area with vibrant parish life.',
-    },
-    {
-      name: 'Epworth',
-      location: 'Epworth',
-      parishes: '8',
-      description: 'Ministering to the people of Epworth and the surrounding townships.',
-    },
-    {
-      name: 'Marlborough',
-      location: 'Marlborough, Harare',
-      parishes: '9',
-      description: 'Serving the northern suburbs of Harare with a focus on family and youth.',
-    },
-    {
-      name: 'Highfields',
-      location: 'Highfields, Harare',
-      parishes: '7',
-      description: 'A vibrant deanery serving the Highfields and surrounding communities.',
-    },
-    {
-      name: 'Mbare',
-      location: 'Mbare, Harare',
-      parishes: '8',
-      description: 'Rooted in the community, serving one of Harare\'s oldest suburbs.',
-    },
-    {
-      name: 'Kambuzuma',
-      location: 'Kambuzuma, Harare',
-      parishes: '6',
-      description: 'Serving the western suburbs of Harare with dedication and faith.',
-    },
-    {
-      name: 'Glen View',
-      location: 'Glen View, Harare',
-      parishes: '7',
-      description: 'Ministering to the people of Glen View and surrounding areas.',
-    },
-  ];
+    // 2. Fetch the real data from your Spring Boot Backend
+    const fetchDeaneries = async () => {
+      try {
+        // This matches the public GET route from your API docs
+        const response = await fetch('http://localhost:8080/api/deaneries');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch deaneries');
+        }
+        
+        const data = await response.json();
+        setDeaneries(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching deaneries:", err);
+        setError("Could not load deaneries at this time. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchDeaneries();
+  }, []);
 
   return (
     <div>
@@ -69,7 +45,7 @@ const Deaneries = () => {
               <Badge bg="warning" text="dark" className="mb-3">Deaneries</Badge>
               <h1 className="display-4 fw-bold">Our Deaneries</h1>
               <p className="lead text-white-50">
-                The Archdiocese of Harare is organized into 15 deaneries, each bringing the Church closer to the community.
+                The Archdiocese of Harare is organized into deaneries, each bringing the Church closer to the community.
               </p>
             </Col>
           </Row>
@@ -108,45 +84,87 @@ const Deaneries = () => {
               <p className="text-muted">Each deanery serves multiple parishes and communities across Zimbabwe.</p>
             </Col>
           </Row>
-          <Row>
-            {deaneries.map((deanery, idx) => (
-              <Col key={idx} lg={3} md={6} className="mb-4">
-                <Card className="h-100 shadow-sm">
-                  <Card.Body>
-                    <div className="text-center">
-                      <FaChurch size={40} className="text-warning mb-2" />
-                      <Card.Title className="fw-bold h6">{deanery.name}</Card.Title>
-                      <Badge bg="light" text="dark" className="mb-2">
-                        <FaMapMarkerAlt className="me-1" /> {deanery.location}
-                      </Badge>
-                      <Card.Text className="text-muted small">{deanery.description}</Card.Text>
-                      <div className="d-flex justify-content-around mt-2">
-                        <span className="badge bg-secondary">
-                          <FaUsers className="me-1" /> {deanery.parishes} Parishes
-                        </span>
-                      </div>
-                      <div className="mt-3">
-                        <Button variant="outline-warning" size="sm">View Deanery</Button>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+          
+          {/* 3. Handle Loading and Error States */}
+          {loading && (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="warning" />
+              <p className="mt-3 text-muted">Loading deaneries...</p>
+            </div>
+          )}
+
+          {error && (
+            <Alert variant="danger" className="text-center">
+              {error}
+            </Alert>
+          )}
+
+          {/* 4. Display Real Data from API */}
+          {!loading && !error && (
+            <Row>
+              {deaneries.length === 0 ? (
+                <Col className="text-center">
+                  <p className="text-muted">No deaneries found in the database yet.</p>
+                </Col>
+              ) : (
+                deaneries.map((deanery) => (
+                  <Col key={deanery.id} lg={3} md={6} className="mb-4">
+                    <Card className="h-100 shadow-sm">
+                      <Card.Body>
+                        <div className="text-center">
+                          <FaChurch size={40} className="text-warning mb-2" />
+                          
+                          {/* Used item.name */}
+                          <Card.Title className="fw-bold h6">{deanery.name}</Card.Title>
+                          
+                          {/* Used item.territory which matches the API docs */}
+                          <Badge bg="light" text="dark" className="mb-2">
+                            <FaMapMarkerAlt className="me-1" /> {deanery.territory || 'Location TBD'}
+                          </Badge>
+                          
+                          {/* Used item.description */}
+                          <Card.Text className="text-muted small">
+                            {deanery.description || 'No description provided.'}
+                          </Card.Text>
+                          
+                          <div className="d-flex justify-content-around mt-2">
+                            <span className="badge bg-secondary">
+                              {/* The API returns parishCount on the GET request */}
+                              <FaUsers className="me-1" /> {deanery.parishCount || 0} Parishes
+                            </span>
+                          </div>
+                          
+                          <div className="mt-3">
+                            {/* Added dynamic link to pass the ID to a detail page later */}
+                            <Button as={Link} to={`/deaneries/${deanery.id}`} variant="outline-warning" size="sm">
+                              View Deanery
+                            </Button>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))
+              )}
+            </Row>
+          )}
         </Container>
       </section>
 
       {/* DEANERY STATS */}
+      {/* Note: You might want to make these dynamic in the future by fetching /api/deaneries/{id}/stats */}
       <section className="py-5 bg-dark text-white">
         <Container>
           <Row className="text-center">
             <Col md={4} className="mb-3">
-              <div className="display-4 fw-bold text-warning">15</div>
+              <div className="display-4 fw-bold text-warning">{deaneries.length}</div>
               <div className="text-white-50">Deaneries</div>
             </Col>
             <Col md={4} className="mb-3">
-              <div className="display-4 fw-bold text-warning">120+</div>
+              <div className="display-4 fw-bold text-warning">
+                {/* Calculate total parishes from the fetched data */}
+                {deaneries.reduce((total, d) => total + (d.parishCount || 0), 0)}
+              </div>
               <div className="text-white-50">Parishes</div>
             </Col>
             <Col md={4} className="mb-3">

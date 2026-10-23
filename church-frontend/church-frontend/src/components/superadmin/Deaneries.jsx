@@ -13,673 +13,267 @@ import {
 const API_URL = "http://localhost:8080/api/deaneries";
 
 function Deaneries() {
-
-
+  // 1. Updated to match the API's expected POST/PUT body
   const emptyForm = {
     name: "",
     description: "",
-    dean: "",
-    location: "",
-    parishCount: "",
-    image: "",
+    territory: "",
+    archdioceseId: 1, // Defaulting to 1 based on your API example
+    status: "ACTIVE",
+    deanId: null,
+    viceDeanId: null,
   };
 
-
   const [deanery, setDeanery] = useState(emptyForm);
-
   const [deaneries, setDeaneries] = useState([]);
-
   const [editingId, setEditingId] = useState(null);
-
   const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState(""); // Added to catch API errors
 
-
+  // 2. Helper function to get the Admin Token
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("token"); // Assuming you store it here
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
 
   // Used after save/update/delete
   const loadDeaneries = async () => {
-
     try {
-
+      // GET is public, no token needed
       const res = await axios.get(API_URL);
-
       setDeaneries(res.data);
-
-
     } catch (err) {
-
       console.error(err);
-
     }
-
   };
-
-
 
   // Initial loading
   useEffect(() => {
-
-
-    const fetchDeaneries = async () => {
-
-      try {
-
-        const res = await axios.get(API_URL);
-
-        setDeaneries(res.data);
-
-
-      } catch (err) {
-
-        console.error(err);
-
-      }
-
-    };
-
-
-    fetchDeaneries();
-
-
+    loadDeaneries();
   }, []);
 
-
-
-
-
   const handleChange = (e) => {
-
     setDeanery({
-
       ...deanery,
-
       [e.target.name]: e.target.value,
-
     });
-
   };
-
-
-
-
-
 
   const clearForm = () => {
-
     setEditingId(null);
-
     setDeanery(emptyForm);
-
+    setErrorMsg("");
   };
-
-
-
-
-
 
   const saveDeanery = async (e) => {
-
     e.preventDefault();
-
+    setErrorMsg("");
 
     try {
-
-
       if (editingId) {
-
-
-        await axios.put(
-          `${API_URL}/${editingId}`,
-          deanery
-        );
-
-
-        setMessage(
-          "Deanery updated successfully."
-        );
-
-
+        // 3. Added Auth Header to PUT
+        await axios.put(`${API_URL}/${editingId}`, deanery, getAuthHeader());
+        setMessage("Deanery updated successfully.");
       } else {
-
-
-        await axios.post(
-          API_URL,
-          deanery
-        );
-
-
-        setMessage(
-          "Deanery added successfully."
-        );
-
-
+        // 3. Added Auth Header to POST
+        await axios.post(API_URL, deanery, getAuthHeader());
+        setMessage("Deanery added successfully.");
       }
 
-
-
-
       clearForm();
-
       loadDeaneries();
-
-
-
     } catch (err) {
-
-
       console.error(err);
-
-
+      // Catch 401/403 or 400 errors from the backend
+      if (err.response && err.response.status === 403) {
+        setErrorMsg("Unauthorized. Only System Admins can perform this action.");
+      } else if (err.response && err.response.status === 400) {
+        setErrorMsg("Invalid input data. Please check your fields.");
+      } else {
+        setErrorMsg("An error occurred while saving.");
+      }
     }
-
   };
-
-
-
-
-
-
 
   const editDeanery = (item) => {
-
     setEditingId(item.id);
-
-    setDeanery(item);
-
+    // Map the returned item safely to our form fields
+    setDeanery({
+      name: item.name || "",
+      description: item.description || "",
+      territory: item.territory || "",
+      archdioceseId: item.archdioceseId || 1,
+      status: item.status || "ACTIVE",
+      deanId: item.dean ? item.dean.id : null, // Handle nested objects if returned
+      viceDeanId: item.viceDean ? item.viceDean.id : null,
+    });
   };
-
-
-
-
-
-
 
   const deleteDeanery = async (id) => {
-
-
     if (!window.confirm("Delete this deanery?")) {
-
       return;
-
     }
-
-
+    setErrorMsg("");
 
     try {
-
-
-      await axios.delete(
-        `${API_URL}/${id}`
-      );
-
-
-      setMessage(
-        "Deanery deleted successfully."
-      );
-
-
+      // 3. Added Auth Header to DELETE
+      await axios.delete(`${API_URL}/${id}`, getAuthHeader());
+      setMessage("Deanery deleted successfully.");
       loadDeaneries();
-
-
-
     } catch (err) {
-
-
       console.error(err);
-
-
+      // Handle the 409 Conflict mentioned in your API docs
+      if (err.response && err.response.status === 409) {
+        setErrorMsg("Cannot delete: This deanery still contains parishes.");
+      } else if (err.response && err.response.status === 403) {
+        setErrorMsg("Unauthorized. Only System Admins can delete.");
+      } else {
+        setErrorMsg("An error occurred while deleting.");
+      }
     }
-
-
   };
 
-
-
-
-
-
-
   return (
-
     <Card className="shadow">
-
-
       <Card.Header>
-
-        <h3>
-          Deanery Management
-        </h3>
-
+        <h3>Deanery Management</h3>
       </Card.Header>
 
-
-
-
       <Card.Body>
-
-
-
-
+        {/* Success Message */}
         {message && (
-
-          <Alert
-
-            variant="success"
-
-            dismissible
-
-            onClose={() => setMessage("")}
-
-          >
-
+          <Alert variant="success" dismissible onClose={() => setMessage("")}>
             {message}
-
           </Alert>
-
         )}
 
-
-
-
-
+        {/* Error Message */}
+        {errorMsg && (
+          <Alert variant="danger" dismissible onClose={() => setErrorMsg("")}>
+            {errorMsg}
+          </Alert>
+        )}
 
         <Form onSubmit={saveDeanery}>
-
-
           <Row>
-
-
-
-
             <Col md={6}>
-
               <Form.Group className="mb-3">
-
-                <Form.Label>
-                  Deanery Name
-                </Form.Label>
-
-
+                <Form.Label>Deanery Name</Form.Label>
                 <Form.Control
-
                   name="name"
-
                   value={deanery.name}
-
                   onChange={handleChange}
-
+                  required
                 />
-
               </Form.Group>
-
-
             </Col>
 
-
-
-
-
-
             <Col md={6}>
-
-
               <Form.Group className="mb-3">
-
-
-                <Form.Label>
-                  Dean
-                </Form.Label>
-
-
+                <Form.Label>Territory</Form.Label>
                 <Form.Control
-
-                  name="dean"
-
-                  value={deanery.dean}
-
+                  name="territory"
+                  value={deanery.territory}
                   onChange={handleChange}
-
+                  placeholder="e.g. Gweru and surrounding areas"
                 />
-
-
               </Form.Group>
-
-
             </Col>
 
-
-
-
-
-
             <Col md={6}>
-
-
               <Form.Group className="mb-3">
-
-
-                <Form.Label>
-                  Location
-                </Form.Label>
-
-
+                <Form.Label>Dean ID (Optional)</Form.Label>
                 <Form.Control
-
-                  name="location"
-
-                  value={deanery.location}
-
-                  onChange={handleChange}
-
-                />
-
-
-              </Form.Group>
-
-
-            </Col>
-
-
-
-
-
-
-            <Col md={6}>
-
-
-              <Form.Group className="mb-3">
-
-
-                <Form.Label>
-                  Number of Parishes
-                </Form.Label>
-
-
-                <Form.Control
-
                   type="number"
-
-                  name="parishCount"
-
-                  value={deanery.parishCount}
-
+                  name="deanId"
+                  value={deanery.deanId || ""}
                   onChange={handleChange}
-
+                  placeholder="e.g. 4"
                 />
-
-
               </Form.Group>
-
-
             </Col>
 
-
-
-
-
-
-            <Col md={12}>
-
-
+            <Col md={6}>
               <Form.Group className="mb-3">
-
-
-                <Form.Label>
-                  Description
-                </Form.Label>
-
-
-                <Form.Control
-
-                  as="textarea"
-
-                  rows={4}
-
-                  name="description"
-
-                  value={deanery.description}
-
+                <Form.Label>Status</Form.Label>
+                <Form.Select
+                  name="status"
+                  value={deanery.status}
                   onChange={handleChange}
-
-                />
-
-
+                >
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </Form.Select>
               </Form.Group>
-
-
             </Col>
-
-
-
-
-
 
             <Col md={12}>
-
-
-              <Form.Group className="mb-4">
-
-
-                <Form.Label>
-                  Image URL
-                </Form.Label>
-
-
+              <Form.Group className="mb-3">
+                <Form.Label>Description</Form.Label>
                 <Form.Control
-
-                  name="image"
-
-                  value={deanery.image}
-
+                  as="textarea"
+                  rows={4}
+                  name="description"
+                  value={deanery.description}
                   onChange={handleChange}
-
                 />
-
-
               </Form.Group>
-
-
             </Col>
-
-
-
-
           </Row>
 
-
-
-
-
-
           <Button type="submit">
-
-            {editingId 
-              ? "Update Deanery" 
-              : "Save Deanery"}
-
+            {editingId ? "Update Deanery" : "Save Deanery"}
           </Button>
 
-
-
-
-
-          <Button
-
-            variant="secondary"
-
-            className="ms-2"
-
-            onClick={clearForm}
-
-          >
-
+          <Button variant="secondary" className="ms-2" onClick={clearForm}>
             Clear
-
           </Button>
-
-
-
-
         </Form>
-
-
-
-
-
-
 
         <hr />
 
-
-
-
-
-
-
         <Table bordered hover responsive>
-
-
-
           <thead>
-
             <tr>
-
-              <th>
-                Name
-              </th>
-
-
-              <th>
-                Dean
-              </th>
-
-
-              <th>
-                Location
-              </th>
-
-
-              <th>
-                Parishes
-              </th>
-
-
-              <th width="170">
-                Actions
-              </th>
-
-
+              <th>Name</th>
+              <th>Territory</th>
+              <th>Status</th>
+              <th>Parishes</th> {/* This comes from the GET request's parishCount */}
+              <th width="170">Actions</th>
             </tr>
-
-
           </thead>
 
-
-
-
-
-
           <tbody>
-
-
-
             {deaneries.map((item) => (
-
-
               <tr key={item.id}>
-
-
+                <td>{item.name}</td>
+                <td>{item.territory}</td>
+                <td>{item.status}</td>
+                <td>{item.parishCount !== undefined ? item.parishCount : 0}</td>
                 <td>
-                  {item.name}
-                </td>
-
-
-                <td>
-                  {item.dean}
-                </td>
-
-
-                <td>
-                  {item.location}
-                </td>
-
-
-                <td>
-                  {item.parishCount}
-                </td>
-
-
-
-
-                <td>
-
-
-                  <Button
-
-                    size="sm"
-
-                    onClick={() => editDeanery(item)}
-
-                  >
-
+                  <Button size="sm" onClick={() => editDeanery(item)}>
                     Edit
-
                   </Button>
-
-
-
-
-
                   <Button
-
                     size="sm"
-
                     variant="danger"
-
                     className="ms-2"
-
                     onClick={() => deleteDeanery(item.id)}
-
                   >
-
                     Delete
-
                   </Button>
-
-
-
                 </td>
-
-
-
               </tr>
-
-
             ))}
-
-
-
           </tbody>
-
-
-
-
         </Table>
-
-
-
-
-
       </Card.Body>
-
-
-
-
     </Card>
-
-
   );
-
 }
-
 
 export default Deaneries;
