@@ -75,6 +75,7 @@ public class SecurityConfig {
 
                 // ─── Auth (login / register) ─────────────────────────
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/auth/parishes").permitAll()
 
                 // ─── System-admin account management ─────────────────
                 .requestMatchers("/api/system-admin/**")

@@ -20,10 +20,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final ParishRepository parishRepository;
 
-    public JwtRequestFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+    public JwtRequestFilter(JwtUtil jwtUtil, UserRepository userRepository,
+                            ParishRepository parishRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.parishRepository = parishRepository;
     }
 
     @Override
@@ -52,11 +55,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // continue using an already-issued JWT.
                 AppUser currentUser = userRepository.findByUsername(username).orElse(null);
 
+                boolean isSystemAdmin = currentUser != null
+                        && "ROLE_SYSTEM_ADMIN".equals(currentUser.getRole());
+                boolean hasValidParish = currentUser != null
+                        && "ROLE_ADMIN".equals(currentUser.getRole())
+                        && currentUser.getParishId() != null
+                        && parishRepository.existsById(currentUser.getParishId());
+
+                // Regular admins must have a real parish assignment on every request.
+                // This invalidates already-issued JWTs for previously approved but
+                // unassigned admins, and for admins whose parish has been deleted.
                 if (currentUser != null
                         && currentUser.isApproved()
                         && !currentUser.isSuspended()
                         && tokenRole != null
-                        && tokenRole.equals(currentUser.getRole())) {
+                        && tokenRole.equals(currentUser.getRole())
+                        && (isSystemAdmin || hasValidParish)) {
 
                     SimpleGrantedAuthority authority =
                             new SimpleGrantedAuthority(currentUser.getRole());
@@ -72,7 +86,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     logger.info("Authenticated user '" + username + "' with current database authority.");
                 } else {
-                    logger.warn("Rejected JWT for missing, unapproved, suspended, or role-mismatched account: "
+                    logger.warn("Rejected JWT for missing, unapproved, suspended, role-mismatched, or parish-unassigned account: "
                             + username);
                 }
             }

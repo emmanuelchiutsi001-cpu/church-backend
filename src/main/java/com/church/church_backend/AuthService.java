@@ -1,55 +1,116 @@
 package com.church.church_backend;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil; // Inject our modern JwtUtil
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final ParishRepository parishRepository;
+    private final JwtUtil jwtUtil;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository,
+                       ParishRepository parishRepository,
+                       JwtUtil jwtUtil,
+                       BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.parishRepository = parishRepository;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public AppUser registerAdminRequest(String username, String password) {
-        Optional<AppUser> existing = userRepository.findByUsername(username);
-        if (existing.isPresent()) {
-            throw new RuntimeException("Username already taken!");
+    /**
+     * A regular administrator must register against an existing parish name.
+     * Parish names are matched case-insensitively after trimming whitespace.
+     * Registration remains pending until the system administrator approves it.
+     */
+    @Transactional
+    public AppUser registerAdminRequest(String username, String password, String parishName) {
+        if (blank(username) || blank(password) || blank(parishName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Username, password, and an existing parish name are required.");
         }
-        String hashedPassword = passwordEncoder.encode(password);
-        AppUser newAdmin = new AppUser(username, hashedPassword, "ROLE_ADMIN", false);
-        return userRepository.save(newAdmin);
+        if (password.length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Password must contain at least 8 characters.");
+        }
+
+        String cleanUsername = username.trim();
+        String cleanParishName = parishName.trim();
+
+        if (userRepository.findByUsername(cleanUsername).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken.");
+        }
+
+        Parish parish = parishRepository.findFirstByNameIgnoreCase(cleanParishName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "That parish does not exist. Select an existing parish or contact the System Administrator."));
+
+        if (userRepository.existsByParishId(parish.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This parish already has an administrator. Contact the System Administrator for assistance.");
+        }
+
+        AppUser admin = new AppUser(cleanUsername, passwordEncoder.encode(password), "ROLE_ADMIN", false);
+        admin.setParishId(parish.getId());
+
+        try {
+            return userRepository.saveAndFlush(admin);
+        } catch (DataIntegrityViolationException ex) {
+            // Covers two simultaneous registration requests for the same parish.
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This parish already has an administrator. Contact the System Administrator for assistance.");
+        }
     }
 
-    // New Method: Verify credentials and issue token
-    public String login(String username, String password) {
-        AppUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid username or password!"));
+    public LoginResponse login(String username, String password) {
+        if (blank(username) || blank(password)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username and password are required.");
+        }
 
-        // 1. Check if the password matches the BCrypt hash
+        AppUser user = userRepository.findByUsername(username.trim())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                        "Invalid username or password."));
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid username or password!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
         }
-
-        // Block suspended accounts before issuing a JWT.
         if (user.isSuspended()) {
-            throw new RuntimeException("Your account has been suspended. Contact the System Admin.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Your account has been suspended. Contact the System Administrator.");
         }
-
-        // Enforcement: Block unapproved admin login attempts.
         if (!user.isApproved()) {
-            throw new RuntimeException("Your account is pending approval from the System Admin.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Your account is awaiting approval from the System Administrator.");
         }
 
-        // Generate and return the secure token embedded with their role.
-        return jwtUtil.generateToken(user.getUsername(), user.getRole());
+        Long parishId = user.getParishId();
+        String parishName = null;
+
+        if ("ROLE_ADMIN".equals(user.getRole())) {
+            if (parishId == null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "This administrator is not assigned to a parish. Contact the System Administrator.");
+            }
+            Parish parish = parishRepository.findById(parishId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "The parish assigned to this account no longer exists. Contact the System Administrator."));
+            parishName = parish.getName();
+        }
+
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+        return new LoginResponse(token, user.getUsername(), user.getRole(), parishId, parishName);
     }
 
     public List<AppUser> getPendingApprovals() {
@@ -58,8 +119,29 @@ public class AuthService {
 
     public AppUser approveAdmin(Long userId) {
         AppUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found!"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        if ("ROLE_ADMIN".equals(user.getRole()) && user.getParishId() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This regular administrator has no parish assignment and cannot be approved.");
+        }
         user.setApproved(true);
         return userRepository.save(user);
+    }
+
+    public List<Map<String, Object>> listAvailableParishes() {
+        return parishRepository.findAll().stream()
+                .filter(parish -> !userRepository.existsByParishId(parish.getId()))
+                .map(parish -> {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", parish.getId());
+                    item.put("name", parish.getName());
+                    item.put("deaneryId", parish.getDeaneryId());
+                    return item;
+                })
+                .toList();
+    }
+
+    private boolean blank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

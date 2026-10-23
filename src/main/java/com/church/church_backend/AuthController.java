@@ -1,16 +1,12 @@
 package com.church.church_backend;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,20 +20,37 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registrationRequest) {
-    authService.registerAdminRequest(registrationRequest.getUsername(), registrationRequest.getPassword());
-    return ResponseEntity.ok("Admin registration request submitted successfully!");
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            AppUser registered = authService.registerAdminRequest(
+                    request.getUsername(), request.getPassword(), request.getParishName());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "message", "Registration submitted. Your parish administrator account is pending System Administrator approval.",
+                    "username", registered.getUsername(),
+                    "parishId", registered.getParishId(),
+                    "parishName", request.getParishName().trim(),
+                    "approved", registered.isApproved()));
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message",
+                    ex.getReason() == null ? "Registration could not be completed." : ex.getReason()));
+        }
     }
 
-    // New Endpoint: Process login and return JWT Response object
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            String token = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
-            return ResponseEntity.ok(new LoginResponse(token));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.ok(authService.login(request.getUsername(), request.getPassword()));
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message",
+                    ex.getReason() == null ? "Login could not be completed." : ex.getReason()));
         }
+    }
+
+    /** Used by the registration form to show only existing parishes without an admin. */
+    @GetMapping("/parishes")
+    public List<Map<String, Object>> availableParishes() {
+        return authService.listAvailableParishes();
     }
 
     @GetMapping("/pending")
@@ -46,8 +59,17 @@ public class AuthController {
     }
 
     @PutMapping("/approve/{id}")
-    public String approveUser(@PathVariable Long id) {
-        authService.approveAdmin(id);
-        return "User account has been approved and activated!";
+    public ResponseEntity<?> approveUser(@PathVariable Long id) {
+        try {
+            AppUser approved = authService.approveAdmin(id);
+            return ResponseEntity.ok(Map.of(
+                    "message", "User account has been approved and activated.",
+                    "id", approved.getId(),
+                    "username", approved.getUsername(),
+                    "parishId", approved.getParishId()));
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message",
+                    ex.getReason() == null ? "Approval could not be completed." : ex.getReason()));
+        }
     }
 }

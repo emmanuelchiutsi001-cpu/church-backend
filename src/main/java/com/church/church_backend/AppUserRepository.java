@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByUsername(String username);
     List<AppUser> findByApprovedFalse();
+    boolean existsByParishId(Long parishId);
 }

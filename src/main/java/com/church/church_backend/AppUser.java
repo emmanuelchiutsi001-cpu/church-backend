@@ -22,17 +22,19 @@ public class AppUser {
     private String password;
 
     @Column(nullable = false)
-    private String role; // e.g., "ROLE_SYSTEM_ADMIN" or "ROLE_ADMIN"
+    private String role; // ROLE_SYSTEM_ADMIN or ROLE_ADMIN
 
     @Column(nullable = false)
-    private boolean approved = false; // System Admin must flip this to true
+    private boolean approved = false;
 
-    // Nullable for compatibility with existing SQLite databases created before this field existed.
-    // Missing legacy values are treated as not suspended by isSuspended().
+    // Existing system-admin accounts may remain unassigned. Every regular admin must have a parish.
+    // Unique ensures a parish can be assigned to at most one regular-admin account.
+    @Column(name = "parish_id", unique = true)
+    private Long parishId;
+
     @Column
     private Boolean suspended = false;
 
-    // Constructors
     public AppUser() {}
 
     public AppUser(String username, String password, String role, boolean approved) {
@@ -42,7 +44,6 @@ public class AppUser {
         this.approved = approved;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -57,6 +58,9 @@ public class AppUser {
 
     public boolean isApproved() { return approved; }
     public void setApproved(boolean approved) { this.approved = approved; }
+
+    public Long getParishId() { return parishId; }
+    public void setParishId(Long parishId) { this.parishId = parishId; }
 
     public boolean isSuspended() { return Boolean.TRUE.equals(suspended); }
     public void setSuspended(boolean suspended) { this.suspended = suspended; }

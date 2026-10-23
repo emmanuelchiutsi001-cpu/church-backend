@@ -23,12 +23,15 @@ public class AdminManagementController {
 
     private final UserRepository userRepository;
     private final SubDivisionRepository subDivisionRepository;
+    private final ParishRepository parishRepository;
 
     public AdminManagementController(
             UserRepository userRepository,
-            SubDivisionRepository subDivisionRepository) {
+            SubDivisionRepository subDivisionRepository,
+            ParishRepository parishRepository) {
         this.userRepository = userRepository;
         this.subDivisionRepository = subDivisionRepository;
+        this.parishRepository = parishRepository;
     }
 
     /** Returns regular-admin accounts without exposing password hashes. */
@@ -40,8 +43,54 @@ public class AdminManagementController {
                         user.getId(),
                         user.getUsername(),
                         user.isApproved(),
-                        user.isSuspended()))
+                        user.isSuspended(),
+                        user.getParishId(),
+                        user.getParishId() == null ? null : parishRepository.findById(user.getParishId())
+                                .map(Parish::getName).orElse(null)))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Assigns one existing parish to a regular admin. Only the System Admin can call this endpoint.
+     * A parish can be assigned to at most one regular admin.
+     */
+    @PutMapping("/{id}/parish")
+    public ResponseEntity<?> assignParish(@PathVariable Long id,
+                                          @org.springframework.web.bind.annotation.RequestBody ParishAssignmentRequest request) {
+        AppUser user = findRegularAdmin(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Regular admin account not found."));
+        }
+        if (request == null || request.getParishId() == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "parishId is required."));
+        }
+
+        Parish parish = parishRepository.findById(request.getParishId()).orElse(null);
+        if (parish == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "The selected parish does not exist."));
+        }
+
+        AppUser currentOwner = userRepository.findByParishId(parish.getId()).orElse(null);
+        if (currentOwner != null && !currentOwner.getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "message", "This parish is already assigned to another administrator."));
+        }
+
+        user.setParishId(parish.getId());
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of(
+                "message", "Parish assigned successfully.",
+                "adminId", user.getId(),
+                "username", user.getUsername(),
+                "parishId", parish.getId(),
+                "parishName", parish.getName()));
+    }
+
+    public static class ParishAssignmentRequest {
+        private Long parishId;
+        public Long getParishId() { return parishId; }
+        public void setParishId(Long parishId) { this.parishId = parishId; }
     }
 
     /** Suspends a regular admin and immediately blocks their existing JWT. */
@@ -112,17 +161,24 @@ public class AdminManagementController {
         private final String username;
         private final boolean approved;
         private final boolean suspended;
+        private final Long parishId;
+        private final String parishName;
 
-        public AdminSummary(Long id, String username, boolean approved, boolean suspended) {
+        public AdminSummary(Long id, String username, boolean approved, boolean suspended,
+                            Long parishId, String parishName) {
             this.id = id;
             this.username = username;
             this.approved = approved;
             this.suspended = suspended;
+            this.parishId = parishId;
+            this.parishName = parishName;
         }
 
         public Long getId() { return id; }
         public String getUsername() { return username; }
         public boolean isApproved() { return approved; }
         public boolean isSuspended() { return suspended; }
+        public Long getParishId() { return parishId; }
+        public String getParishName() { return parishName; }
     }
 }
