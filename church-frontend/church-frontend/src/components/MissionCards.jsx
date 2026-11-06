@@ -24,18 +24,18 @@ function MissionCards() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
+        staggerChildren: 0.08,
+        delayChildren: 0.15,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 18 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.45, ease: "easeOut" },
     },
   };
 
@@ -82,25 +82,14 @@ function MissionCards() {
               variants={itemVariants}
               className="col-md-4"
             >
-              <motion.div 
-                className="p-3 bg-white rounded-3 shadow-sm text-center h-100"
-                whileHover={{ 
-                  y: -8,
-                  boxShadow: "0 12px 40px rgba(13,71,161,0.08)"
-                }}
-                transition={{ duration: 0.3 }}
+              <div
+                className="mission-card"
                 style={{ borderBottom: `3px solid ${i === 0 ? "#0D47A1" : i === 1 ? "#D4AF37" : "#dc3545"}` }}
               >
-                <motion.span 
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                  style={{ fontSize: "2rem", color: "#D4AF37", display: "block", marginBottom: "6px" }}
-                >
-                  {card.icon}
-                </motion.span>
-                <h6 className="fw-bold" style={{ color: "#0D47A1", fontSize: "0.9rem" }}>{card.title}</h6>
-                <p className="text-muted mb-0" style={{ fontSize: "0.8rem", lineHeight: "1.6" }}>{card.text}</p>
-              </motion.div>
+                <span className="mission-icon">{card.icon}</span>
+                <h6 className="mission-title">{card.title}</h6>
+                <p className="mission-text">{card.text}</p>
+              </div>
             </motion.div>
           ))}
         </motion.div>

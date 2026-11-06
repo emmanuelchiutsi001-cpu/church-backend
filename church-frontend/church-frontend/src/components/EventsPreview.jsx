@@ -11,15 +11,13 @@ function EventsPreview() {
     { title: "Annual Convention", date: "Coming Soon", desc: "Youth conference, retreat, and leadership training", icon: "🌟" },
     { title: "Bible Study", date: "Every Wednesday", desc: "Deepening our faith through scripture and discussion", icon: "📖" },
     { title: "Youth Choir", date: "Saturdays", desc: "Singing praises to the Lord through music", icon: "🎵" },
-    { title: "Community Outreach", date: "Monthly", desc: "Serving our community with love and compassion", icon: "🤝" }
+    { title: "Community Outreach", date: "Monthly", desc: "Serving our community with love and compassion", icon: "🤝" },
   ];
 
   useEffect(() => {
     if (!isHovered) {
       const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => 
-          prevIndex + 3 >= events.length ? 0 : prevIndex + 3
-        );
+        setCurrentIndex((prevIndex) => (prevIndex + 3 >= events.length ? 0 : prevIndex + 3));
       }, 4000);
       return () => clearInterval(interval);
     }
@@ -31,107 +29,58 @@ function EventsPreview() {
   const totalSlides = Math.ceil(events.length / 3);
 
   return (
-    <motion.section 
+    <motion.section
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.5 }}
       viewport={{ once: true }}
-      className="py-4 bg-light"
+      className="events-preview"
     >
       <div className="container">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
           viewport={{ once: true }}
-          className="text-center mb-3"
+          className="section-header"
         >
-          <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-2" style={{ 
-            fontSize: "0.5rem", 
-            letterSpacing: "3px",
-            border: "1px solid rgba(13,71,161,0.1)"
-          }}>
-            WHAT'S HAPPENING
-          </span>
-          <h4 className="fw-bold" style={{ color: "#0D47A1", fontSize: "clamp(1.2rem, 2vw, 1.5rem)" }}>
-            Upcoming <span style={{ color: "#D4AF37" }}>Events</span>
-          </h4>
-          <div className="mx-auto" style={{ width: "40px", height: "2px", background: "#D4AF37" }} />
-          <p className="text-muted" style={{ fontSize: "0.8rem" }}>Join us in our faith-filled activities</p>
+          <span className="eyebrow">What&apos;s happening</span>
+          <h2 className="section-title">
+            Upcoming <span className="accent">Events</span>
+          </h2>
+          <p className="section-blurb">Join us in our faith-filled activities.</p>
+          <div className="gold-divider" />
         </motion.div>
-        
-        <div 
-          className="position-relative"
+
+        <div
+          className="events-carousel"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <div className="row g-3">
             {fullDisplay.map((event, i) => (
-              <motion.div 
-                key={i} 
-                className="col-md-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <motion.div 
-                  className="card border-0 shadow-sm h-100"
-                  whileHover={{ y: -8, boxShadow: "0 12px 40px rgba(0,0,0,0.08)" }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="card-body p-3 text-center">
-                    <motion.span 
-                      animate={{ 
-                        scale: [1, 1.1, 1],
-                        rotate: [0, 5, -5, 0]
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      style={{ fontSize: "2.5rem", marginBottom: "8px", display: "inline-block" }}
-                    >
-                      {event.icon}
-                    </motion.span>
-                    <div className="mb-2">
-                      <span className="badge" style={{ 
-                        background: "#D4AF37",
-                        color: "white",
-                        fontSize: "0.55rem",
-                        fontWeight: "600"
-                      }}>
-                        {event.date}
-                      </span>
-                    </div>
-                    <h6 className="fw-bold" style={{ color: "#0D47A1", fontSize: "0.85rem" }}>{event.title}</h6>
-                    <p className="text-muted mb-2" style={{ fontSize: "0.75rem" }}>{event.desc}</p>
-                    <motion.button 
-                      className="btn btn-outline-primary btn-sm rounded-pill px-3" 
-                      style={{ fontSize: "0.7rem" }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Learn More →
-                    </motion.button>
-                  </div>
-                </motion.div>
+              <motion.div key={`${event.title}-${i}`} className="col-md-4">
+                <div className="event-card">
+                  <div className="event-icon">{event.icon}</div>
+                  <span className="event-badge">{event.date}</span>
+                  <h6>{event.title}</h6>
+                  <p>{event.desc}</p>
+                  <button type="button" className="event-btn">
+                    Learn More →
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
 
-          {/* Navigation Dots */}
-          <div className="d-flex justify-content-center gap-2 mt-3">
+          <div className="carousel-dots">
             {Array.from({ length: totalSlides }).map((_, index) => (
-              <motion.button
+              <button
                 key={index}
+                type="button"
                 onClick={() => setCurrentIndex(index * 3)}
-                className="border-0 rounded-pill"
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  width: index === Math.floor(currentIndex / 3) ? "20px" : "8px",
-                  height: "6px",
-                  background: index === Math.floor(currentIndex / 3) ? "#0D47A1" : "#d3d3d3",
-                  transition: "all 0.3s ease",
-                  cursor: "pointer"
-                }}
+                className={index === Math.floor(currentIndex / 3) ? "active" : ""}
+                aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
@@ -140,4 +89,5 @@ function EventsPreview() {
     </motion.section>
   );
 }
+
 export default EventsPreview;

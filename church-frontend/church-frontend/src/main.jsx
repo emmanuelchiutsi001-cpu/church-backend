@@ -4,22 +4,17 @@ import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "./index.css";
 
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-
-<BrowserRouter
-
-future={{
-v7_startTransition: true,
-v7_relativeSplatPath: true
-}}
-
->
-
-<App />
-
-</BrowserRouter>
-
+  <BrowserRouter
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    <App />
+  </BrowserRouter>
 );

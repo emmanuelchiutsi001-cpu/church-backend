@@ -1,44 +1,32 @@
 import { Outlet } from "react-router-dom";
-
 import SuperAdminSideNav from "./SuperAdminSideNav";
 
-
 function SuperAdminLayout() {
-
-
   return (
-
-    <div className="d-flex">
-
-
+    <div className="admin-shell">
       <SuperAdminSideNav />
 
-
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: "260px",
-          minHeight: "100vh",
-          background: "#f8f9fa"
-        }}
-      >
-
-
-        <div className="container-fluid p-4">
-
-          <Outlet />
-
+      <main className="admin-main">
+        <div className="admin-content-wrap">
+          <div className="admin-page-card">
+            <div className="admin-hero-panel">
+              <div className="admin-hero-inner">
+                <div className="eyebrow">Archdiocese Control</div>
+                <h1>Super Administrator</h1>
+                <p>
+                  Oversee deaneries, leadership, ministries, content, and public
+                  church operations from one central management area.
+                </p>
+              </div>
+            </div>
+            <div className="p-4">
+              <Outlet />
+            </div>
+          </div>
         </div>
-
-
-      </div>
-
-
+      </main>
     </div>
-
   );
-
 }
-
 
 export default SuperAdminLayout;
