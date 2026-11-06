@@ -1,4 +1,6 @@
-﻿import { NavLink, useNavigate } from "react-router-dom";
+﻿import { useEffect, useState } from "react";
+import axios from "axios";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import {
   FaHome,
@@ -14,8 +16,29 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 
+const API_URL = "http://localhost:8080/api/auth";
+
 function AdminSidebar() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${API_URL}/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data || null);
+      } catch (error) {
+        console.log("Failed loading sidebar parish", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const displayParish = user?.parish?.name || localStorage.getItem("parishName") || "Parish Portal";
 
   const menuItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: <FaHome /> },
@@ -42,7 +65,7 @@ function AdminSidebar() {
           <div className="admin-sidebar-badge">A</div>
           <div>
             <div className="admin-sidebar-title">Agnes &amp; Alois</div>
-            <div className="admin-sidebar-subtitle">Parish Portal</div>
+            <div className="admin-sidebar-subtitle">{displayParish}</div>
           </div>
         </div>
       </div>

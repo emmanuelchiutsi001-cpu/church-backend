@@ -10,6 +10,10 @@ function AdminNavbar() {
   const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(null);
 
+  const displayName = user?.username || localStorage.getItem("username") || "Parish Admin";
+  const displayRole = user?.role || localStorage.getItem("role") || "Parish Admin";
+  const displayParish = user?.parish?.name || localStorage.getItem("parishName") || "Parish Portal";
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -39,16 +43,11 @@ function AdminNavbar() {
     <header className="admin-topbar">
       <div className="admin-topbar-inner">
         <div className="admin-topbar-title">
-          <h5>{user?.parish?.name || "Parish Portal"}</h5>
+          <h5>{displayParish}</h5>
           <small>Parish Administration Portal</small>
         </div>
 
         <div className="admin-topbar-actions">
-          <div className="admin-notification" aria-label="Notifications">
-            <FaBell />
-            <span className="admin-notification-badge">3</span>
-          </div>
-
           <div className="admin-profile">
             <div
               className="admin-profile-trigger"
@@ -56,8 +55,8 @@ function AdminNavbar() {
             >
               <FaUserCircle size={32} className="text-primary" />
               <div>
-                <h6>{user?.username || "Loading..."}</h6>
-                <small>{user?.role || ""}</small>
+                <h6>{displayName}</h6>
+                <small>{displayRole}</small>
               </div>
             </div>
 

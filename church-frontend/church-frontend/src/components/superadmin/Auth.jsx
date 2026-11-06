@@ -219,7 +219,7 @@ function SuperAdminAuth() {
                         <strong>{admin.username}</strong>
                       </td>
                       <td>{admin.email}</td>
-                      <td>{admin.parish || "N/A"}</td>
+                      <td>{admin.parishName || admin.parish || "N/A"}</td>
                       <td>
                         <Badge bg="warning" text="dark">
                           <i className="bi bi-clock-history me-1"></i>
@@ -294,8 +294,8 @@ function SuperAdminAuth() {
                 </p>
                 <div className="bg-light p-3 rounded text-start mt-3">
                   <small>
-                    <strong>Email:</strong> {selectedAdmin?.email}<br />
-                    <strong>Parish:</strong> {selectedAdmin?.parish || "N/A"}
+                    <strong>Email:</strong> {selectedAdmin?.email || "Not provided"}<br />
+                    <strong>Parish:</strong> {selectedAdmin?.parishName || selectedAdmin?.parish || "N/A"}
                   </small>
                 </div>
               </>
@@ -308,8 +308,8 @@ function SuperAdminAuth() {
                 <p className="text-muted">This action cannot be undone.</p>
                 <div className="bg-light p-3 rounded text-start mt-3">
                   <small>
-                    <strong>Email:</strong> {selectedAdmin?.email}<br />
-                    <strong>Parish:</strong> {selectedAdmin?.parish || "N/A"}
+                    <strong>Email:</strong> {selectedAdmin?.email || "Not provided"}<br />
+                    <strong>Parish:</strong> {selectedAdmin?.parishName || selectedAdmin?.parish || "N/A"}
                   </small>
                 </div>
               </>

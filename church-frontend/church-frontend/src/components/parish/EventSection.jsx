@@ -13,7 +13,7 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 
-const API_URL = "http://localhost:8080/api/eventsection";
+const API_URL = "http://localhost:8080/api/events";
 
 function Event() {
 
@@ -124,26 +124,20 @@ function Event() {
 
 
 
-                  {
-                    event.image && (
-
-                      <Card.Img
-
-                        variant="top"
-
-                        src={
-                          `http://localhost:8080/uploads/${event.image}`
-                        }
-
-                        style={{
-                          height:"220px",
-                          objectFit:"cover"
-                        }}
-
-                      />
-
-                    )
-                  }
+                  {(event.imageUrl || event.image) && (
+                    <Card.Img
+                      variant="top"
+                      src={
+                        (event.imageUrl || event.image).startsWith("http")
+                          ? (event.imageUrl || event.image)
+                          : `http://localhost:8080${event.imageUrl || event.image}`
+                      }
+                      style={{
+                        height:"220px",
+                        objectFit:"cover"
+                      }}
+                    />
+                  )}
 
 
 
@@ -189,7 +183,7 @@ function Event() {
 
                         <FaCalendar className="me-2 text-warning"/>
 
-                        {event.eventDate}
+                        {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : "Date not set"}
 
                       </p>
 

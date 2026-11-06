@@ -1,277 +1,142 @@
-import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import BackButton from "../BackButton";
+import apiClient from "../../utils/axiosConfig";
 
+function Gallery() {
+    const [gallery, setGallery] = useState({ title: "" });
+    const [images, setImages] = useState([]);
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-function Gallery(){
+    const loadGallery = async () => {
+        try {
+            const { data } = await apiClient.get("/gallery");
+            setImages(Array.isArray(data) ? data : []);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to load gallery.");
+        }
+    };
 
+    useEffect(() => {
+        loadGallery();
+    }, []);
 
-const [gallery,setGallery]=useState({
+    const submit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccess("");
 
-albumName:"",
-category:"",
-description:"",
-coverImage:null,
-photos:[]
+        if (!gallery.title.trim()) {
+            setError("Please enter an image title.");
+            return;
+        }
 
-});
+        if (!file) {
+            setError("Please select an image.");
+            return;
+        }
 
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            formData.append("title", gallery.title.trim());
+            formData.append("file", file);
 
+            await apiClient.post("/gallery/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
-const handlePhotos=(e)=>{
+            setSuccess("Gallery image uploaded successfully.");
+            setGallery({ title: "" });
+            setFile(null);
+            const input = document.getElementById("gallery-file");
+            if (input) input.value = "";
+            await loadGallery();
+        } catch (err) {
+            setError(err.response?.data?.message || err.response?.data || "Gallery upload failed.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-setGallery({
+    const handleDelete = async (id) => {
+        if (!window.confirm("Delete this gallery image?")) return;
 
-...gallery,
+        try {
+            await apiClient.delete(`/gallery/${id}`);
+            setSuccess("Image deleted successfully.");
+            await loadGallery();
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to delete gallery image.");
+        }
+    };
 
-photos:Array.from(e.target.files)
+    return (
+        <div className="container mt-4">
+            <BackButton />
+            <h2 className="fw-bold text-primary">Gallery Management</h2>
 
-});
+            {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
 
-};
+            <form onSubmit={submit} className="card p-4 shadow-sm mb-4">
+                <div className="mb-3">
+                    <label>Image Title</label>
+                    <input
+                        className="form-control"
+                        placeholder="Example: St Alois Feast 2026"
+                        value={gallery.title}
+                        onChange={(e) => setGallery({ title: e.target.value })}
+                    />
+                </div>
 
+                <div className="mb-3">
+                    <label>Upload Image</label>
+                    <input
+                        id="gallery-file"
+                        type="file"
+                        className="form-control"
+                        accept="image/*"
+                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    />
+                </div>
 
+                <button className="btn btn-primary" disabled={loading}>
+                    {loading ? "Uploading..." : "Upload Gallery Image"}
+                </button>
+            </form>
 
-const submit=(e)=>{
-
-e.preventDefault();
-
-
-const formData = new FormData();
-
-
-formData.append(
-"albumName",
-gallery.albumName
-);
-
-
-formData.append(
-"category",
-gallery.category
-);
-
-
-formData.append(
-"description",
-gallery.description
-);
-
-
-
-formData.append(
-"coverImage",
-gallery.coverImage
-);
-
-
-
-gallery.photos.forEach((photo)=>{
-
-formData.append(
-"photos[]",
-photo
-);
-
-});
-
-
-
-console.log(gallery);
-
-
-alert("Gallery uploaded successfully");
-
-
-};
-
-
-
-return(
-
-
-<div className="container mt-4">
-
-      <BackButton />
-
-
-<h2 className="fw-bold text-primary">
-Gallery Management
-</h2>
-
-
-
-<form onSubmit={submit}>
-
-
-
-<div className="mb-3">
-
-<label>
-Album Name
-</label>
-
-
-<input
-className="form-control"
-placeholder="Example: St Alois Feast 2026"
-onChange={(e)=>
-setGallery({
-...gallery,
-albumName:e.target.value
-})
+            <div className="card p-4 shadow-sm">
+                <h4 className="mb-3">Current Gallery</h4>
+                {images.length === 0 ? (
+                    <p className="text-muted mb-0">No photos have been uploaded yet.</p>
+                ) : (
+                    <div className="row g-3">
+                        {images.map((image) => (
+                            <div key={image.id} className="col-md-4">
+                                <div className="card h-100">
+                                    <img
+                                        src={image.fileUrl?.startsWith("http") ? image.fileUrl : `http://localhost:8080${image.fileUrl}`}
+                                        alt={image.title}
+                                        className="card-img-top"
+                                        style={{ height: "180px", objectFit: "cover" }}
+                                    />
+                                    <div className="card-body d-flex justify-content-between align-items-center">
+                                        <span className="fw-semibold">{image.title}</span>
+                                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(image.id)}>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
-/>
-
-
-</div>
-
-
-
-
-
-<div className="mb-3">
-
-<label>
-Category
-</label>
-
-
-<select
-className="form-control"
-onChange={(e)=>
-setGallery({
-...gallery,
-category:e.target.value
-})
-}
->
-
-
-<option>
-Select Category
-</option>
-
-<option>
-Feast Celebration
-</option>
-
-<option>
-Mass
-</option>
-
-<option>
-Youth Activities
-</option>
-
-<option>
-Charity
-</option>
-
-<option>
-Church Events
-</option>
-
-
-</select>
-
-
-</div>
-
-
-
-
-
-<div className="mb-3">
-
-<label>
-Description
-</label>
-
-
-<textarea
-className="form-control"
-rows="4"
-placeholder="Album description"
-onChange={(e)=>
-setGallery({
-...gallery,
-description:e.target.value
-})
-}
-/>
-
-
-</div>
-
-
-
-
-
-
-<div className="mb-3">
-
-<label>
-Album Cover Image
-</label>
-
-
-<input
-type="file"
-className="form-control"
-accept="image/*"
-onChange={(e)=>
-setGallery({
-...gallery,
-coverImage:e.target.files[0]
-})
-}
-/>
-
-
-</div>
-
-
-
-
-
-
-<div className="mb-3">
-
-<label>
-Upload Photos
-</label>
-
-
-<input
-type="file"
-multiple
-className="form-control"
-accept="image/*"
-onChange={handlePhotos}
-/>
-
-
-</div>
-
-
-
-
-
-<button className="btn btn-primary">
-Create Gallery Album
-</button>
-
-
-
-</form>
-
-
-</div>
-
-
-)
-
-}
-
 
 export default Gallery;

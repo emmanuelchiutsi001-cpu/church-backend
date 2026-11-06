@@ -636,8 +636,11 @@ function SuperDashboard() {
                       <div className="fw-bold text-break">
                         {admin.username}
                       </div>
-                      <small className="text-muted">
+                      <small className="text-muted d-block">
                         Admin ID: {admin.id}
+                      </small>
+                      <small className="text-primary d-block mt-1">
+                        Requested parish: {admin.parishName || admin.parish || "N/A"}
                       </small>
 
                       <div className="d-flex gap-2 mt-3">

@@ -1,337 +1,235 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import BackButton from "../BackButton";
 
+const API_URL = "http://localhost:8080/api/parishes";
 
-function ParishProfile(){
-
-
-const [parish,setParish]=useState({
-
-name:"",
-logo:null,
-cover:null,
-description:"",
-history:"",
-address:"",
-city:"",
-phone:"",
-email:"",
-patronSaint:"",
-established:"",
-priest:"",
-assistantPriest:"",
-sundayMass:"",
-weekdayMass:"",
-facebook:"",
-youtube:"",
-instagram:"",
-officeHours:""
-
-});
-
-
-
-const submit=(e)=>{
-
-e.preventDefault();
-
-
-const formData = new FormData();
-
-
-Object.keys(parish).forEach((key)=>{
-
-formData.append(key, parish[key]);
-
-});
-
-
-console.log(parish);
-
-
-alert("Parish Profile Saved");
-
-
+const emptyForm = {
+  deaneryId: "",
+  name: "",
+  address: "",
+  phone: "",
+  email: "",
+  yearEstablished: "",
+  imageUrl: "",
+  facebookPageUrl: "",
+  catholicCount: 0,
 };
 
+function ParishProfile() {
+  const [parish, setParish] = useState(emptyForm);
+  const [parishId, setParishId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    const fetchParishProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const meRes = await axios.get("http://localhost:8080/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-return(
+        const assignedParishId = meRes?.data?.parishId || localStorage.getItem("parishId");
 
+        if (!assignedParishId) {
+          setError("This account is not assigned to a parish yet.");
+          setLoading(false);
+          return;
+        }
 
-<div className="container mt-4">
+        setParishId(Number(assignedParishId));
 
+        const parishRes = await axios.get(`${API_URL}/${assignedParishId}`);
+        setParish({
+          deaneryId: parishRes.data.deaneryId ?? "",
+          name: parishRes.data.name ?? "",
+          address: parishRes.data.address ?? "",
+          phone: parishRes.data.phone ?? "",
+          email: parishRes.data.email ?? "",
+          yearEstablished: parishRes.data.yearEstablished ?? "",
+          imageUrl: parishRes.data.imageUrl ?? "",
+          facebookPageUrl: parishRes.data.facebookPageUrl ?? "",
+          catholicCount: parishRes.data.catholicCount ?? 0,
+        });
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load the parish profile. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParishProfile();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setParish((current) => ({
+      ...current,
+      [name]: ["deaneryId", "yearEstablished", "catholicCount"].includes(name)
+        ? value === "" ? "" : Number(value)
+        : value,
+    }));
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+
+    if (!parishId) {
+      setError("No parish is assigned to this account.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const payload = { ...parish };
+      if (payload.deaneryId === "") delete payload.deaneryId;
+      if (payload.yearEstablished === "") delete payload.yearEstablished;
+      if (payload.catholicCount === "") delete payload.catholicCount;
+
+      const token = localStorage.getItem("token");
+      await axios.put(`${API_URL}/${parishId}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setMessage("Parish profile saved successfully.");
+      localStorage.setItem("parishName", parish.name);
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Unable to save the parish profile.");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="container mt-4">
       <BackButton />
 
+      <h2 className="fw-bold text-primary">Parish Profile</h2>
 
-<h2 className="fw-bold text-primary">
-Parish Profile
-</h2>
+      {loading ? (
+        <div className="alert alert-info mt-3">Loading parish details...</div>
+      ) : (
+        <form onSubmit={submit} className="mt-4">
+          {message && <div className="alert alert-success">{message}</div>}
+          {error && <div className="alert alert-danger">{error}</div>}
 
+          <div className="row">
+            <div className="col-md-6">
+              <label className="form-label">Parish Name</label>
+              <input
+                className="form-control mb-3"
+                name="name"
+                value={parish.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
+            <div className="col-md-6">
+              <label className="form-label">Deanery ID</label>
+              <input
+                className="form-control mb-3"
+                name="deaneryId"
+                type="number"
+                value={parish.deaneryId}
+                onChange={handleChange}
+                placeholder="Optional"
+              />
+            </div>
 
-<form onSubmit={submit}>
+            <div className="col-md-6">
+              <label className="form-label">Address</label>
+              <input
+                className="form-control mb-3"
+                name="address"
+                value={parish.address}
+                onChange={handleChange}
+              />
+            </div>
 
+            <div className="col-md-6">
+              <label className="form-label">Phone Number</label>
+              <input
+                className="form-control mb-3"
+                name="phone"
+                value={parish.phone}
+                onChange={handleChange}
+              />
+            </div>
 
-<h5 className="mt-4">
-Basic Information
-</h5>
+            <div className="col-md-6">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control mb-3"
+                name="email"
+                value={parish.email}
+                onChange={handleChange}
+              />
+            </div>
 
+            <div className="col-md-6">
+              <label className="form-label">Year Established</label>
+              <input
+                type="number"
+                className="form-control mb-3"
+                name="yearEstablished"
+                value={parish.yearEstablished}
+                onChange={handleChange}
+              />
+            </div>
 
-<input
-className="form-control mb-3"
-placeholder="Parish Name"
-onChange={(e)=>
-setParish({
-...parish,
-name:e.target.value
-})
+            <div className="col-md-6">
+              <label className="form-label">Image URL</label>
+              <input
+                className="form-control mb-3"
+                name="imageUrl"
+                value={parish.imageUrl}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Facebook Page URL</label>
+              <input
+                className="form-control mb-3"
+                name="facebookPageUrl"
+                value={parish.facebookPageUrl}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Catholic Count</label>
+              <input
+                type="number"
+                min="0"
+                className="form-control mb-3"
+                name="catholicCount"
+                value={parish.catholicCount}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <button className="btn btn-primary" type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save Parish Profile"}
+          </button>
+        </form>
+      )}
+    </div>
+  );
 }
-/>
-
-
-
-<label>
-Parish Logo
-</label>
-
-<input
-type="file"
-className="form-control mb-3"
-accept="image/*"
-onChange={(e)=>
-setParish({
-...parish,
-logo:e.target.files[0]
-})
-}
-/>
-
-
-
-<label>
-Cover Image
-</label>
-
-<input
-type="file"
-className="form-control mb-3"
-accept="image/*"
-onChange={(e)=>
-setParish({
-...parish,
-cover:e.target.files[0]
-})
-}
-/>
-
-
-
-
-<textarea
-className="form-control mb-3"
-rows="3"
-placeholder="Short Description"
-onChange={(e)=>
-setParish({
-...parish,
-description:e.target.value
-})
-}
-/>
-
-
-
-
-<textarea
-className="form-control mb-3"
-rows="5"
-placeholder="Parish History"
-onChange={(e)=>
-setParish({
-...parish,
-history:e.target.value
-})
-}
-/>
-
-
-
-
-
-<h5 className="mt-4">
-Contact Information
-</h5>
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Address"
-onChange={(e)=>
-setParish({
-...parish,
-address:e.target.value
-})
-}
-/>
-
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Phone Number"
-onChange={(e)=>
-setParish({
-...parish,
-phone:e.target.value
-})
-}
-/>
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Email"
-onChange={(e)=>
-setParish({
-...parish,
-email:e.target.value
-})
-}
-/>
-
-
-
-
-
-<h5 className="mt-4">
-Church Details
-</h5>
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Patron Saint"
-onChange={(e)=>
-setParish({
-...parish,
-patronSaint:e.target.value
-})
-}
-/>
-
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Parish Priest"
-onChange={(e)=>
-setParish({
-...parish,
-priest:e.target.value
-})
-}
-/>
-
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Assistant Priest"
-onChange={(e)=>
-setParish({
-...parish,
-assistantPriest:e.target.value
-})
-}
-/>
-
-
-
-
-
-<h5 className="mt-4">
-Mass Schedule
-</h5>
-
-
-
-<textarea
-className="form-control mb-3"
-placeholder="Sunday Mass Times"
-onChange={(e)=>
-setParish({
-...parish,
-sundayMass:e.target.value
-})
-}
-/>
-
-
-
-<textarea
-className="form-control mb-3"
-placeholder="Weekday Mass Times"
-onChange={(e)=>
-setParish({
-...parish,
-weekdayMass:e.target.value
-})
-}
-/>
-
-
-
-
-
-<h5>
-Social Media
-</h5>
-
-
-
-<input
-className="form-control mb-3"
-placeholder="Facebook Link"
-/>
-
-
-<input
-className="form-control mb-3"
-placeholder="YouTube Link"
-/>
-
-
-<input
-className="form-control mb-3"
-placeholder="Instagram Link"
-/>
-
-
-
-
-
-<button className="btn btn-primary">
-Save Parish Profile
-</button>
-
-
-
-</form>
-
-
-</div>
-
-
-)
-
-}
-
 
 export default ParishProfile;

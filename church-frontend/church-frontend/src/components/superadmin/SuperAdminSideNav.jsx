@@ -23,6 +23,7 @@ function SuperAdminSideNav() {
     { title: "Authentication", path: "/superadmin/auth", icon: <FaUserShield /> },
     { title: "Contact", path: "/superadmin/contact", icon: <FaAddressBook /> },
     { title: "Deaneries", path: "/superadmin/deaneries", icon: <FaChurch /> },
+    { title: "Parishes", path: "/superadmin/parishes", icon: <FaChurch /> },
     { title: "Events", path: "/superadmin/events", icon: <FaCalendarAlt /> },
     { title: "Gallery", path: "/superadmin/gallery", icon: <FaImages /> },
     { title: "Leadership", path: "/superadmin/leadership", icon: <FaUsers /> },

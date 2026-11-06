@@ -37,6 +37,10 @@ function AdminLogin() {
       );
 
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("username", response.data.username || login.username);
+      localStorage.setItem("role", response.data.role || "ROLE_ADMIN");
+      localStorage.setItem("parishId", response.data.parishId ?? "");
+      localStorage.setItem("parishName", response.data.parishName || "");
 
       alert("Login successful.");
 
